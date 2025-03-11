@@ -20,10 +20,9 @@ public class Film {
     @Size(max = 200, message = "Описание должно быть не длиннее 200 символов")
     private String description;
 
-    @NotNull(message = "Дата релиза не должна быть пустой")
     private LocalDate releaseDate;
 
-    @Positive
+    @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
     @AssertTrue(message = "Дата релиза должна быть не раньше 28 декабря 1895 года")
