@@ -14,10 +14,10 @@ import java.time.LocalDate;
 public class Film {
     private Long id;
 
-    @NotBlank(message = "Имя не может быть пустым")
+    @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
 
-    @Size(max = 200, message = "Описание должно быть не длиннее 200 символов")
+    @Size(max = 200, message = "Описание фильма должно быть не длиннее 200 символов")
     private String description;
 
     private LocalDate releaseDate;
@@ -25,7 +25,7 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
-    @AssertTrue(message = "Дата релиза должна быть не раньше 28 декабря 1895 года")
+    @AssertTrue(message = "Дата релиза фильма должна быть не раньше 28 декабря 1895 года")
     @JsonIgnore
     public boolean isReleaseDateValid() {
         if (releaseDate == null) {

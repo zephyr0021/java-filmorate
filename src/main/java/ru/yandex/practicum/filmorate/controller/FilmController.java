@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/films")
 public class FilmController {
@@ -24,25 +26,31 @@ public class FilmController {
     public Film addFilm(@Valid @RequestBody Film film) {
         film.setId(getNextId());
         films.put(film.getId(), film);
+        log.info("Добавлен фильм: {}", film);
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film newFilm) {
-        if (newFilm.getId() == null) throw new ValidationException("Id не может быть пустым");
+        if (newFilm.getId() == null) {
+            log.warn("В запросе на обновление фильма не передан id");
+            throw new ValidationException("Id не может быть пустым");
+        }
         if (films.containsKey(newFilm.getId())) {
             Film oldFilm = films.get(newFilm.getId());
             Optional.ofNullable(newFilm.getName()).ifPresent(oldFilm::setName);
             Optional.ofNullable(newFilm.getDescription()).ifPresent(oldFilm::setDescription);
             Optional.ofNullable(newFilm.getReleaseDate()).ifPresent(oldFilm::setReleaseDate);
             Optional.ofNullable(newFilm.getDuration()).ifPresent(oldFilm::setDuration);
+            log.info("Обновлен фильм: {}", oldFilm);
             return oldFilm;
         } else {
+            log.warn("В запросе на обновление фильма передан неизвестный id - {}", newFilm.getId());
             throw new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
         }
     }
 
-    private long getNextId() {
+    private long getNextId () {
         long currentMaxId = films.keySet()
                 .stream()
                 .mapToLong(id -> id)
