@@ -6,28 +6,30 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping(path = "/films")
 public class FilmController {
-    private final HashMap<Long, Film> films = new HashMap<>();
+
+    FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return films.values();
+        return filmService.getFilms();
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-        log.info("Добавлен фильм: {}", film);
-        return film;
+        return filmService.addFilm(film);
     }
 
     @PutMapping
@@ -36,8 +38,8 @@ public class FilmController {
             log.warn("В запросе на обновление фильма не передан id");
             throw new ValidationException("Id не может быть пустым");
         }
-        if (films.containsKey(newFilm.getId())) {
-            Film oldFilm = films.get(newFilm.getId());
+        if (filmService.getFilmsMap().containsKey(newFilm.getId())) {
+            Film oldFilm = filmService.getFilmsMap().get(newFilm.getId());
             Optional.ofNullable(newFilm.getName()).ifPresent(oldFilm::setName);
             Optional.ofNullable(newFilm.getDescription()).ifPresent(oldFilm::setDescription);
             Optional.ofNullable(newFilm.getReleaseDate()).ifPresent(oldFilm::setReleaseDate);
@@ -48,14 +50,5 @@ public class FilmController {
             log.warn("В запросе на обновление фильма передан неизвестный id - {}", newFilm.getId());
             throw new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
         }
-    }
-
-    private long getNextId () {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
     }
 }
