@@ -36,128 +36,113 @@ class FilmControllerTest {
 
     static Stream<String> provideInvalidFilmJsonCreate() {
         return Stream.of(
-                """
-                        {
-                            "name": "",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Пустое название
-                """
-                        {
-                            "name": "The Matrix",
-                            "description": "eVsHnlJqcle8LzLbMyajlPHJvq6xPAEBqvi0V55TAlZ6vokGPaTGgzI9ypdZv8X5X2StI10zqReOEy"
-                                           "mkWTNcxCFbRqrmJBVrIdgQf9VDYXcE76DmMQ7jI4jzHZ0XKxx13dlujL9A3MbNudpQC4Uw1aoIsOoD"
-                                           "cHS1JAHFXAEduHxtxNuo3Iq6tGj0xXZqDczZX2UqqTfm",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Описание длиной 201 символ
-                """
-                        {
-                            "name": "The Matrix",
-                            "description": "NQ1qwgfJURRuOBe7rZJuRMNP4wCGFHKvrz5flsvTzz5NKXwP1II7Jytjjwn51G51eQBF2IfydfdRrkdq"
-                                           "50DSPqWqOFri415GQb8HgwqI1ET0uF5wDFBS9iwzCysqqSTffd0BcRf1zHwPjMwDSOnQHETMtSEYTd"
-                                           "V7PLRlZw4mgreyXaFpSjVXB4149KfTyeFL9YFXSANQbCly2IwtFAftdPKSTHrLzNFk2AEwInZGATHu"
-                                           "q73LwzP5qmx89M",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Описание длиной 300 символов
-                """
-                        {
-                            "name": "The Matrix",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1800-12-25",
-                            "duration": 10
-                        }
-                        """, // Дата раньше 1895
-                """
-                        {
-                            "name": "The Matrix",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1900-12-25",
-                            "duration": -5
-                        }
-                        """ // Отрицательная длительность
+                "{\n" +
+                        "  \"name\": \"\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Пустое название
+
+                "{\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"eVsHnlJqcle8LzLbMyajlPHJvq6xPAEBqvi0V55TAlZ6vokGPaTGgzI9ypdZv8X5X2StI10zqReOEy" +
+                        "mkWTNcxCFbRqrmJBVrIdgQf9VDYXcE76DmMQ7jI4jzHZ0XKxx13dlujL9A3MbNudpQC4Uw1aoIsOoD" +
+                        "cHS1JAHFXAEduHxtxNuo3Iq6tGj0xXZqDczZX2UqqTfmt\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Описание длиной 201 символ
+
+                "{\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"NQ1qwgfJURRuOBe7rZJuRMNP4wCGFHKvrz5flsvTzz5NKXwP1II7Jytjjwn51G51eQBF2IfydfdRrkdq" +
+                        "50DSPqWqOFri415GQb8HgwqI1ET0uF5wDFBS9iwzCysqqSTffd0BcRf1zHwPjMwDSOnQHETMtSEYTd" +
+                        "V7PLRlZw4mgreyXaFpSjVXB4149KfTyeFL9YFXSANQbCly2IwtFAftdPKSTHrLzNFk2AEwInZGATHu" +
+                        "q73LwzP5qmx89M\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Описание длиной 300 символов
+
+                "{\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1800-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Дата раньше 1895
+
+                "{\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": -5\n" +
+                        "}" // Отрицательная длительность
         );
     }
 
     static Stream<String> provideInvalidFilmJsonUpdate() {
         return Stream.of(
-                """
-                        {
-                            "id": 1,
-                            "name": "",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Пустое название
-                """
-                        {
-                            "id": 1,
-                            "name": "The Matrix",
-                            "description": "eVsHnlJqcle8LzLbMyajlPHJvq6xPAEBqvi0V55TAlZ6vokGPaTGgzI9ypdZv8X5X2StI10zqReOEy"
-                                           "mkWTNcxCFbRqrmJBVrIdgQf9VDYXcE76DmMQ7jI4jzHZ0XKxx13dlujL9A3MbNudpQC4Uw1aoIsOoD"
-                                           "cHS1JAHFXAEduHxtxNuo3Iq6tGj0xXZqDczZX2UqqTfm",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Описание длиной 201 символ
-                """
-                        {
-                            "id": 1,
-                            "name": "The Matrix",
-                            "description": "NQ1qwgfJURRuOBe7rZJuRMNP4wCGFHKvrz5flsvTzz5NKXwP1II7Jytjjwn51G51eQBF2IfydfdRrkdq"
-                                           "50DSPqWqOFri415GQb8HgwqI1ET0uF5wDFBS9iwzCysqqSTffd0BcRf1zHwPjMwDSOnQHETMtSEYTd"
-                                           "V7PLRlZw4mgreyXaFpSjVXB4149KfTyeFL9YFXSANQbCly2IwtFAftdPKSTHrLzNFk2AEwInZGATHu"
-                                           "q73LwzP5qmx89M",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Описание длиной 300 символов
-                """
-                        {
-                            "id": 1,
-                            "name": "The Matrix",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1800-12-25",
-                            "duration": 10
-                        }
-                        """, // Дата раньше 1895
-                """
-                        {
-                            "id": 1,
-                            "name": "The Matrix",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1900-12-25",
-                            "duration": -5
-                        }
-                        """ // Отрицательная длительность
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Пустое название
+
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"eVsHnlJqcle8LzLbMyajlPHJvq6xPAEBqvi0V55TAlZ6vokGPaTGgzI9ypdZv8X5X2StI10zqReOEy" +
+                        "mkWTNcxCFbRqrmJBVrIdgQf9VDYXcE76DmMQ7jI4jzHZ0XKxx13dlujL9A3MbNudpQC4Uw1aoIsOoD" +
+                        "cHS1JAHFXAEduHxtxNuo3Iq6tGj0xXZqDczZX2UqqTfmt\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Описание длиной 201 символ
+
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"NQ1qwgfJURRuOBe7rZJuRMNP4wCGFHKvrz5flsvTzz5NKXwP1II7Jytjjwn51G51eQBF2IfydfdRrkdq" +
+                        "50DSPqWqOFri415GQb8HgwqI1ET0uF5wDFBS9iwzCysqqSTffd0BcRf1zHwPjMwDSOnQHETMtSEYTd" +
+                        "V7PLRlZw4mgreyXaFpSjVXB4149KfTyeFL9YFXSANQbCly2IwtFAftdPKSTHrLzNFk2AEwInZGATHu" +
+                        "q73LwzP5qmx89M\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Описание длиной 300 символов
+
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1800-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Дата раньше 1895
+
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": -5\n" +
+                        "}" // Отрицательная длительность
         );
     }
 
     static Stream<String> provideInvalidFilmJsonIdUpdate() {
         return Stream.of(
-                """
-                        {
-                            "name": "The Matrix",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """, // Без id
-                """
-                        {
-                            "id": 125,
-                            "name": "The Matrix",
-                            "description": "Sci-fi action",
-                            "releaseDate": "1900-12-25",
-                            "duration": 10
-                        }
-                        """ // Id нет в списке
+                "{\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}", // Без id
+
+                "{\n" +
+                        "  \"id\": 125,\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1900-12-25\",\n" +
+                        "  \"duration\": 10\n" +
+                        "}" // Id нет в списке
         );
     }
 
@@ -180,48 +165,49 @@ class FilmControllerTest {
         ResponseEntity<String> response = restTemplate.getForEntity("/films", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString("""
-                [
-                    {
-                        "id": 1,
-                        "name": "The Matrix",
-                        "description": "Sci-fi action",
-                        "releaseDate": "1900-12-25",
-                        "duration": 10
-                    },
-                    {
-                        "id": 2,
-                        "name": "The Dark Knight",
-                        "description": "Superhero thriller",
-                        "releaseDate": "1900-12-25",
-                        "duration": 10
-                    }
-                ]
-                """);
+        JsonElement expectedJson = JsonParser.parseString(
+                "[\n" +
+                        "  {\n" +
+                        "    \"id\": 1,\n" +
+                        "    \"name\": \"The Matrix\",\n" +
+                        "    \"description\": \"Sci-fi action\",\n" +
+                        "    \"releaseDate\": \"1900-12-25\",\n" +
+                        "    \"duration\": 10\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"id\": 2,\n" +
+                        "    \"name\": \"The Dark Knight\",\n" +
+                        "    \"description\": \"Superhero thriller\",\n" +
+                        "    \"releaseDate\": \"1900-12-25\",\n" +
+                        "    \"duration\": 10\n" +
+                        "  }\n" +
+                        "]"
+        );
         assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
     }
 
     @Test
     void addFilm() {
-        String json = """
-                {
-                  "name": "The Matrix",
-                  "description": "Sci-fi action",
-                  "releaseDate": "1967-03-25",
-                  "duration": 100
-                }""";
+        String json = "{\n" +
+                "  \"name\": \"The Matrix\",\n" +
+                "  \"description\": \"Sci-fi action\",\n" +
+                "  \"releaseDate\": \"1967-03-25\",\n" +
+                "  \"duration\": 100\n" +
+                "}";
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.POST, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString("""
-                { "id": 1,
-                  "name": "The Matrix",
-                  "description": "Sci-fi action",
-                  "releaseDate": "1967-03-25",
-                  "duration": 100
-                }""");
+        JsonElement expectedJson = JsonParser.parseString(
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"The Matrix\",\n" +
+                        "  \"description\": \"Sci-fi action\",\n" +
+                        "  \"releaseDate\": \"1967-03-25\",\n" +
+                        "  \"duration\": 100\n" +
+                        "}"
+        );
         Film createdFilm = filmService.getFilmsMap().get(1L);
         assertNotNull(createdFilm);
         assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
@@ -236,14 +222,13 @@ class FilmControllerTest {
     void updateFilm() {
         filmService.addFilm(new Film(1L, "The Matrix", "Sci-fi action",
                 LocalDate.of(1900, 12, 25), 10));
-        String json = """
-                {
-                  "id": 1,
-                  "name": "The Matrix updated",
-                  "description": "Sci-fi action updated",
-                  "releaseDate": "1967-03-25",
-                  "duration": 100
-                }""";
+        String json = "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"name\": \"The Matrix updated\",\n" +
+                "  \"description\": \"Sci-fi action updated\",\n" +
+                "  \"releaseDate\": \"1967-03-25\",\n" +
+                "  \"duration\": 100\n" +
+                "}";
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

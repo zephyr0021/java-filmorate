@@ -42,127 +42,103 @@ public class UserControllerTest {
 
     static Stream<String> provideInvalidUserJsonCreate() {
         return Stream.of(
-                """
-                        {
-                          "login": "doloreullamco",
-                          "name": "test User",
-                          "email": "mail.ru",
-                          "birthday": "1980-08-20"
-                        }
-                        """, // Не верный email
+                "{\n" +
+                        "  \"login\": \"doloreullamco\",\n" +
+                        "  \"name\": \"test User\",\n" +
+                        "  \"email\": \"mail.ru\",\n" +
+                        "  \"birthday\": \"1980-08-20\"\n" +
+                        "}", // Не верный email
 
-                """
-                        {
-                          "login": "doloreullamco",
-                          "name": "test User",
-                          "email": "",
-                          "birthday": "1980-08-20"
-                        }
-                        """, // пустой email
+                "{\n" +
+                        "  \"login\": \"doloreullamco\",\n" +
+                        "  \"name\": \"test User\",\n" +
+                        "  \"email\": \"\",\n" +
+                        "  \"birthday\": \"1980-08-20\"\n" +
+                        "}", // пустой email
 
-                """
-                        {
-                          "login": "dolore ullamco",
-                          "name": "test User",
-                          "email": "mail@mail.ru",
-                          "birthday": "1980-08-20"
-                        }
-                        """, // логин с пробелами
+                "{\n" +
+                        "  \"login\": \"dolore ullamco\",\n" +
+                        "  \"name\": \"test User\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1980-08-20\"\n" +
+                        "}", // логин с пробелами
 
-                """
-                        {
-                          "login": "",
-                          "name": "Nick Name",
-                          "email": "mail@mail.ru",
-                          "birthday": "1946-08-20"
-                        }
-                        """, // пустой логин
+                "{\n" +
+                        "  \"login\": \"\",\n" +
+                        "  \"name\": \"Nick Name\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1946-08-20\"\n" +
+                        "}", // пустой логин
 
-                """
-                        {
-                          "login": "dolore",
-                          "name": "Nick Name",
-                          "email": "mail@mail.ru",
-                          "birthday": "2060-08-20"
-                        }
-                        """ // Дата рождения в будущем
+                "{\n" +
+                        "  \"login\": \"dolore\",\n" +
+                        "  \"name\": \"Nick Name\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"2060-08-20\"\n" +
+                        "}" // Дата рождения в будущем
         );
     }
 
     static Stream<String> provideInvalidUserJsonUpdate() {
         return Stream.of(
-                """
-                        {
-                          "id": 1,
-                          "login": "doloreullamco",
-                          "name": "test User",
-                          "email": "mail.ru",
-                          "birthday": "1980-08-20"
-                        }
-                        """, // Не верный email
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"login\": \"doloreullamco\",\n" +
+                        "  \"name\": \"test User\",\n" +
+                        "  \"email\": \"mail.ru\",\n" +
+                        "  \"birthday\": \"1980-08-20\"\n" +
+                        "}", // Не верный email
 
-                """
-                        {
-                          "id": 1,
-                          "login": "doloreullamco",
-                          "name": "test User",
-                          "email": "",
-                          "birthday": "1980-08-20"
-                        }
-                        """, // пустой email
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"login\": \"doloreullamco\",\n" +
+                        "  \"name\": \"test User\",\n" +
+                        "  \"email\": \"\",\n" +
+                        "  \"birthday\": \"1980-08-20\"\n" +
+                        "}", // пустой email
 
-                """
-                        {
-                          "id": 1,
-                          "login": "dolore ullamco",
-                          "name": "test User",
-                          "email": "mail@mail.ru",
-                          "birthday": "1980-08-20"
-                        }
-                        """, // логин с пробелами
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"login\": \"dolore ullamco\",\n" +
+                        "  \"name\": \"test User\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1980-08-20\"\n" +
+                        "}", // логин с пробелами
 
-                """
-                        {
-                          "id": 1,
-                          "login": "",
-                          "name": "Nick Name",
-                          "email": "mail@mail.ru",
-                          "birthday": "1946-08-20"
-                        }
-                        """, // пустой логин
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"login\": \"\",\n" +
+                        "  \"name\": \"Nick Name\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1946-08-20\"\n" +
+                        "}", // пустой логин
 
-                """
-                        {
-                          "id": 1,
-                          "login": "dolore",
-                          "name": "Nick Name",
-                          "email": "mail@mail.ru",
-                          "birthday": "2060-08-20"
-                        }
-                        """ // Дата рождения в будущем
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"login\": \"dolore\",\n" +
+                        "  \"name\": \"Nick Name\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"2060-08-20\"\n" +
+                        "}" // Дата рождения в будущем
         );
     }
 
     static Stream<String> provideInvalidUserJsonIdUpdate() {
         return Stream.of(
-                """
-                        {
-                          "login": "dolore",
-                          "name": "Nick Name",
-                          "email": "mail@mail.ru",
-                          "birthday": "1946-08-20"
-                        }
-                        """, // Без Id
+                "{\n" +
+                        "  \"login\": \"dolore\",\n" +
+                        "  \"name\": \"Nick Name\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1946-08-20\"\n" +
+                        "}", // Без Id
 
-                """
-                        {
-                          "id": 123,
-                          "login": "dolore",
-                          "name": "Nick Name",
-                          "email": "mail@mail.ru",
-                          "birthday": "1946-08-20"
-                        }
-                        """ // Id отсутствует в списке
+                "{\n" +
+                        "  \"id\": 123,\n" +
+                        "  \"login\": \"dolore\",\n" +
+                        "  \"name\": \"Nick Name\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1946-08-20\"\n" +
+                        "}" // Id отсутствует в списке
         );
     }
 
@@ -176,49 +152,47 @@ public class UserControllerTest {
         ResponseEntity<String> response = restTemplate.getForEntity("/users", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString("""
-                [
-                    {
-                        "id": 1,
-                        "email": "test@mail.ru",
-                        "login": "login1",
-                        "name": "user1",
-                        "birthday": "1999-02-18"
-                    },
-                    {
-                        "id": 2,
-                        "email": "test2@mail.ru",
-                        "login": "login2",
-                        "name": "user2",
-                        "birthday": "2001-05-25"
-                    }
-                ]
-                """);
+        JsonElement expectedJson = JsonParser.parseString(
+                "[\n" +
+                        "  {\n" +
+                        "    \"id\": 1,\n" +
+                        "    \"email\": \"test@mail.ru\",\n" +
+                        "    \"login\": \"login1\",\n" +
+                        "    \"name\": \"user1\",\n" +
+                        "    \"birthday\": \"1999-02-18\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"id\": 2,\n" +
+                        "    \"email\": \"test2@mail.ru\",\n" +
+                        "    \"login\": \"login2\",\n" +
+                        "    \"name\": \"user2\",\n" +
+                        "    \"birthday\": \"2001-05-25\"\n" +
+                        "  }\n" +
+                        "]"
+        );
         assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
     }
 
     @Test
     void addUser() {
-        String json = """
-                {
-                  "login": "testlogin",
-                  "name": "Test User",
-                  "email": "mail@mail.ru",
-                  "birthday": "1946-08-20"
-                }
-                """;
+        String json = "{\n" +
+                "  \"login\": \"testlogin\",\n" +
+                "  \"name\": \"Test User\",\n" +
+                "  \"email\": \"mail@mail.ru\",\n" +
+                "  \"birthday\": \"1946-08-20\"\n" +
+                "}";
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         ResponseEntity<String> response = restTemplate.exchange("/users", HttpMethod.POST, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString("""
-                { "id": 1,
-                  "login": "testlogin",
-                  "name": "Test User",
-                  "email": "mail@mail.ru",
-                  "birthday": "1946-08-20"
-                }
-                """);
+        JsonElement expectedJson = JsonParser.parseString(
+                "{ \"id\": 1,\n" +
+                        "  \"login\": \"testlogin\",\n" +
+                        "  \"name\": \"Test User\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1946-08-20\"\n" +
+                        "}"
+        );
         assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
 
         User createdUser = userService.getUsersMap().get(1L);
@@ -231,25 +205,24 @@ public class UserControllerTest {
 
     @Test
     void addUserWithoutName() {
-        String json = """
-                {
-                  "login": "testlogin",
-                  "email": "mail@mail.ru",
-                  "birthday": "1946-08-20"
-                }
-                """;
+        String json = "{\n" +
+                "  \"login\": \"testlogin\",\n" +
+                "  \"email\": \"mail@mail.ru\",\n" +
+                "  \"birthday\": \"1946-08-20\"\n" +
+                "}";
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         ResponseEntity<String> response = restTemplate.exchange("/users", HttpMethod.POST, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString("""
-                { "id": 1,
-                  "login": "testlogin",
-                  "name": "testlogin",
-                  "email": "mail@mail.ru",
-                  "birthday": "1946-08-20"
-                }
-                """);
+
+        JsonElement expectedJson = JsonParser.parseString(
+                "{ \"id\": 1,\n" +
+                        "  \"login\": \"testlogin\",\n" +
+                        "  \"name\": \"testlogin\",\n" +
+                        "  \"email\": \"mail@mail.ru\",\n" +
+                        "  \"birthday\": \"1946-08-20\"\n" +
+                        "}"
+        );
         assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
 
         User createdUser = userService.getUsersMap().get(1L);
@@ -264,15 +237,13 @@ public class UserControllerTest {
     void updateUser() {
         userService.addUser(new User(1L, "test@mail.ru", "login1", "user1",
                 LocalDate.of(1999, 2, 18)));
-        String json = """
-                {
-                  "id": 1,
-                  "login": "login1Upd",
-                  "name": "Test User upd",
-                  "email": "mailupd@mail.ru",
-                  "birthday": "1978-10-21"
-                }
-                """;
+        String json = "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"login\": \"login1Upd\",\n" +
+                "  \"name\": \"Test User upd\",\n" +
+                "  \"email\": \"mailupd@mail.ru\",\n" +
+                "  \"birthday\": \"1978-10-21\"\n" +
+                "}";
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         ResponseEntity<String> response = restTemplate.exchange("/users", HttpMethod.PUT, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -293,14 +264,12 @@ public class UserControllerTest {
     void updateUserWithoutName() {
         userService.addUser(new User(1L, "test@mail.ru", "login1", "user1",
                 LocalDate.of(1999, 2, 18)));
-        String json = """
-                {
-                  "id": 1,
-                  "login": "login1Upd",
-                  "email": "mailupd@mail.ru",
-                  "birthday": "1978-10-21"
-                }
-                """;
+        String json = "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"login\": \"login1Upd\",\n" +
+                "  \"email\": \"mailupd@mail.ru\",\n" +
+                "  \"birthday\": \"1978-10-21\"\n" +
+                "}";
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         ResponseEntity<String> response = restTemplate.exchange("/users", HttpMethod.PUT, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
