@@ -32,7 +32,7 @@ public class FilmService {
         films.clear();
     }
 
-    private long getNextId () {
+    private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()
                 .mapToLong(id -> id)
