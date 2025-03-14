@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequestMapping(path = "/films")
 public class FilmController {
 
-    FilmService filmService;
+    private final FilmService filmService;
 
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
