@@ -2,11 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,6 +34,31 @@ public class UserService {
         users.put(user.getId(), user);
         log.info("Добавлен пользователь: {}", user);
         return user;
+    }
+
+    public User updateUser(User newUser) {
+        if (newUser.getId() == null) {
+            log.warn("В запросе на обновление юзера не передан id");
+            throw new ValidationException("Id не может быть пустым");
+        }
+        if (users.containsKey(newUser.getId())) {
+            User oldUser = users.get(newUser.getId());
+            if (newUser.getName() == null || newUser.getName().isBlank()) {
+                oldUser.setName(newUser.getLogin());
+                log.info("В запросе обновления пользователя передан пустой name. Для поля name использован логин {}",
+                        newUser.getLogin());
+            } else {
+                Optional.of(newUser.getName()).ifPresent(oldUser::setName);
+            }
+            Optional.ofNullable(newUser.getEmail()).ifPresent(oldUser::setEmail);
+            Optional.ofNullable(newUser.getBirthday()).ifPresent(oldUser::setBirthday);
+            Optional.ofNullable(newUser.getLogin()).ifPresent(oldUser::setLogin);
+            log.info("Обновлен юзер: {}", oldUser);
+            return oldUser;
+        } else {
+            log.warn("В запросе на обновление пользователя передан неизвестный id - {}", newUser.getId());
+            throw new NotFoundException("Пользователь с id " + newUser.getId() + " не найден");
+        }
     }
 
     public void clearData() {
