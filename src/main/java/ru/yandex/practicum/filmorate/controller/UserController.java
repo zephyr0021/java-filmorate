@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -19,6 +20,11 @@ public class UserController {
     @GetMapping
     public Collection<User> getUsers() {
         return userStorage.getUsers();
+    }
+
+    @GetMapping("/{userId}")
+    public User getFilm(@PathVariable Long userId) {
+        return userStorage.getUser(userId);
     }
 
     @PostMapping

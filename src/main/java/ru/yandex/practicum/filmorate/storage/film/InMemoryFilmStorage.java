@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Controller
+@Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
@@ -21,37 +22,25 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
-    public Film getFilm(Long id) {
-        if (!films.containsKey(id)) {
-            throw new NotFoundException("Фильм с id  " + id + " не найден");
-        }
-        return films.get(id);
+    public Optional<Film> getFilm(Long id) {
+        return films.values().stream()
+                .filter(film -> film.getId().equals(id))
+                .findFirst();
     }
 
     public Film addFilm(Film film) {
         film.setId(getNextId());
         films.put(film.getId(), film);
-        log.info("Добавлен фильм: {}", film);
         return film;
     }
 
     public Film updateFilm(Film newFilm) {
-        if (newFilm.getId() == null) {
-            log.warn("В запросе на обновление фильма не передан id");
-            throw new ValidationException("Id не может быть пустым");
-        }
-        if (films.containsKey(newFilm.getId())) {
-            Film oldFilm = films.get(newFilm.getId());
-            Optional.ofNullable(newFilm.getName()).ifPresent(oldFilm::setName);
-            Optional.ofNullable(newFilm.getDescription()).ifPresent(oldFilm::setDescription);
-            Optional.ofNullable(newFilm.getReleaseDate()).ifPresent(oldFilm::setReleaseDate);
-            Optional.ofNullable(newFilm.getDuration()).ifPresent(oldFilm::setDuration);
-            log.info("Обновлен фильм: {}", oldFilm);
-            return oldFilm;
-        } else {
-            log.warn("В запросе на обновление фильма передан неизвестный id - {}", newFilm.getId());
-            throw new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
-        }
+        Film oldFilm = films.get(newFilm.getId());
+        Optional.ofNullable(newFilm.getName()).ifPresent(oldFilm::setName);
+        Optional.ofNullable(newFilm.getDescription()).ifPresent(oldFilm::setDescription);
+        Optional.ofNullable(newFilm.getReleaseDate()).ifPresent(oldFilm::setReleaseDate);
+        Optional.ofNullable(newFilm.getDuration()).ifPresent(oldFilm::setDuration);
+        return oldFilm;
     }
 
     private long getNextId() {

@@ -14,20 +14,25 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final InMemoryFilmStorage filmStorage;
+    private final FilmService filmService;
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return filmStorage.getFilms();
+        return filmService.getAllFilms();
+    }
+
+    @GetMapping("/{filmId}")
+    public Film getFilm(@PathVariable Long filmId) {
+        return filmService.getFilmById(filmId);
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        return filmStorage.addFilm(film);
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film newFilm) {
-        return filmStorage.updateFilm(newFilm);
+        return filmService.updateFilm(newFilm);
     }
 }
