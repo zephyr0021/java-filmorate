@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Film.
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Film {
     private Long id;
+    private Set<Long> usersLikes;
 
     @NotBlank(message = "Название фильма не может быть пустым")
     private String name;

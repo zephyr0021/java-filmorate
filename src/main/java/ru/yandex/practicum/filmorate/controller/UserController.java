@@ -2,11 +2,11 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.response.SuccessResponse;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.Collection;
 
@@ -28,6 +28,7 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
@@ -36,4 +37,18 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User newUser) {
         return userService.updateUser(newUser);
     }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public SuccessResponse addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
+        return new SuccessResponse();
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public SuccessResponse removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.removeFriend(id, friendId);
+        return new SuccessResponse();
+    }
+
+
 }

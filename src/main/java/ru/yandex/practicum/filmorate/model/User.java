@@ -4,19 +4,22 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User.
  */
 
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class User {
     private Long id;
+    private Set<Long> friends = new HashSet<>();
 
     @Email(message = "Электронная почта пользователя должна соответствовать формату электронного адреса")
     @NotBlank(message = "Электронная почта пользователя не может быть пустой")

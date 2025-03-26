@@ -4,15 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.OtherException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -59,5 +56,29 @@ public class UserService {
         return userStorage.updateUser(newUser);
 
 
+    }
+
+    public void addFriend(Long id, Long friendId) {
+        User user = getUserById(id);
+        User friend = getUserById(friendId);
+
+        if (!user.getFriends().add(friendId) || !friend.getFriends().add(id)) {
+            log.warn("Пользователи с id {} и id {} уже являются друзьями", id, friendId);
+            throw new OtherException("Пользователи уже являются друзьями");
+        }
+
+        log.info("Пользователь с id {} добавил в друзья пользователя с id {}", id, friendId);
+    }
+
+    public void removeFriend(Long id, Long friendId) {
+        User user = getUserById(id);
+        User friend = getUserById(friendId);
+
+        if (!user.getFriends().remove(friendId) || !friend.getFriends().remove(id)) {
+            log.warn("У пользователя с id {} не найден друг с id {}", id, friendId);
+            throw new NotFoundException("Пользователь не найден в друзьях");
+        }
+
+        log.info("Пользователь с id {} удалил из друзей пользователя с id {}", id, friendId);
     }
 }
