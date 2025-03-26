@@ -15,25 +15,25 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final InMemoryUserStorage userStorage;
+    private final UserService userService;
 
     @GetMapping
     public Collection<User> getUsers() {
-        return userStorage.getUsers();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
     public User getFilm(@PathVariable Long userId) {
-        return userStorage.getUser(userId);
+        return userService.getUserById(userId);
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        return userStorage.addUser(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User newUser) {
-        return userStorage.updateUser(newUser);
+        return userService.updateUser(newUser);
     }
 }

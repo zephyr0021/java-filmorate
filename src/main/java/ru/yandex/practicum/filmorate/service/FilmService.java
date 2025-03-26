@@ -45,7 +45,6 @@ public class FilmService {
                     return new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
                 });
 
-        log.info("Обновлен фильм: {}", newFilm);
         return filmStorage.updateFilm(newFilm);
     }
 }

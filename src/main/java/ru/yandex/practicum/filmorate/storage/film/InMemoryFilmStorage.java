@@ -31,6 +31,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film addFilm(Film film) {
         film.setId(getNextId());
         films.put(film.getId(), film);
+        log.info("Добавлен фильм: {}", film);
         return film;
     }
 
@@ -40,6 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         Optional.ofNullable(newFilm.getDescription()).ifPresent(oldFilm::setDescription);
         Optional.ofNullable(newFilm.getReleaseDate()).ifPresent(oldFilm::setReleaseDate);
         Optional.ofNullable(newFilm.getDuration()).ifPresent(oldFilm::setDuration);
+        log.info("Обновлен фильм: {}", newFilm);
         return oldFilm;
     }
 
