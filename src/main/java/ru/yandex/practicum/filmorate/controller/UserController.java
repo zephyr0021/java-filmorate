@@ -50,5 +50,17 @@ public class UserController {
         return new SuccessResponse();
     }
 
+    @GetMapping("/{id}/friends")
+    public Collection<User> getFriends(@PathVariable Long id) {
+        return userService.getUserFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        return userService.getCommonUserFriends(id, otherId);
+    }
+
+
+
 
 }

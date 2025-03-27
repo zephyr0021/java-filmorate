@@ -62,6 +62,11 @@ public class UserService {
         User user = getUserById(id);
         User friend = getUserById(friendId);
 
+        if (id.equals(friendId)) {
+            log.warn("Пользователь не может добавить сам себя в друзья");
+            throw new OtherException("Пользователь не может добавить сам себя в друзья");
+        }
+
         if (!user.getFriends().add(friendId) || !friend.getFriends().add(id)) {
             log.warn("Пользователи с id {} и id {} уже являются друзьями", id, friendId);
             throw new OtherException("Пользователи уже являются друзьями");
@@ -80,5 +85,16 @@ public class UserService {
         }
 
         log.info("Пользователь с id {} удалил из друзей пользователя с id {}", id, friendId);
+    }
+
+    public Collection<User> getUserFriends(Long id) {
+        return getUserById(id).getFriends().stream()
+                .map(this::getUserById).toList();
+    }
+
+    public Collection<User> getCommonUserFriends(Long id, Long otherId) {
+        return getUserById(id).getFriends().stream()
+                .filter(getUserById(otherId).getFriends()::contains)
+                .map(this::getUserById).toList();
     }
 }
