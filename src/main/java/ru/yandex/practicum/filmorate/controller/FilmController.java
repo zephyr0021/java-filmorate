@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.response.SuccessResponse;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.util.Collection;
 
@@ -34,5 +34,11 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film newFilm) {
         return filmService.updateFilm(newFilm);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public SuccessResponse likeFilm(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.likeFilm(id, userId);
+        return new SuccessResponse();
     }
 }
