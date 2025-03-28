@@ -71,4 +71,8 @@ public class FilmService {
     public Collection<Film> getPopularFilms(int count) {
         return filmStorage.getFilms().stream().sorted(filmComparator).limit(count).toList();
     }
+
+    public void clearFilmsData() {
+        filmStorage.clearData();
+    }
 }

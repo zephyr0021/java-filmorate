@@ -15,5 +15,7 @@ public interface FilmStorage {
 
     Optional<Film> getFilm(Long id);
 
+    void clearData();
+
 
 }
