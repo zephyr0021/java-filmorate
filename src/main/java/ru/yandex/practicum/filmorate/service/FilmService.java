@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @Service
 @Slf4j
@@ -17,6 +18,7 @@ import java.util.Collection;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final Comparator<Film> filmComparator = Comparator.comparing((Film film) -> film.getUsersLikes().size()).reversed();
 
 
     public Collection<Film> getAllFilms() {
@@ -55,5 +57,18 @@ public class FilmService {
         }
 
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
+    }
+
+    public void removeLikeFilm(Long filmId, Long userId) {
+        if (!getFilmById(filmId).getUsersLikes().remove(userService.getUserById(userId).getId())) {
+            log.warn("Пользователь с id {} не ставил лайк фильму id {}", userId, filmId);
+            throw new OtherException("Пользователь не ставил лайк фильму");
+        }
+
+        log.info("Пользователь с id {} удалил свой лайк у фильма с id {}", userId, filmId);
+    }
+
+    public Collection<Film> getPopularFilms(int count) {
+        return filmStorage.getFilms().stream().sorted(filmComparator).limit(count).toList();
     }
 }
