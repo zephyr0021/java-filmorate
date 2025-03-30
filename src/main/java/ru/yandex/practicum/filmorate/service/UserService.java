@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userStorage.getUser(id).orElseThrow(() -> new NotFoundException("Юзер с id  " + id + " не найден"));
+        return userStorage.getUser(id).orElseThrow(() -> new NotFoundException("Юзер с id " + id + " не найден"));
     }
 
     public User createUser(User user) {
@@ -96,5 +96,9 @@ public class UserService {
         return getUserById(id).getFriends().stream()
                 .filter(getUserById(otherId).getFriends()::contains)
                 .map(this::getUserById).toList();
+    }
+
+    public void clearUsersData() {
+        userStorage.clearData();
     }
 }

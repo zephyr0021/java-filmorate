@@ -14,4 +14,6 @@ public interface UserStorage {
     Collection<User> getUsers();
 
     Optional<User> getUser(Long id);
+
+    void clearData();
 }
