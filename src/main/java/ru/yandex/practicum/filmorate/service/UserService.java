@@ -81,7 +81,6 @@ public class UserService {
 
         if (!user.getFriends().remove(friendId) || !friend.getFriends().remove(id)) {
             log.warn("У пользователя с id {} не найден друг с id {}", id, friendId);
-            throw new NotFoundException("Пользователь не найден в друзьях");
         }
 
         log.info("Пользователь с id {} удалил из друзей пользователя с id {}", id, friendId);

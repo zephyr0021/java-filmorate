@@ -279,8 +279,8 @@ class FilmControllerTest {
     @Test
     void likeFilm() throws Exception {
 
-        mockMvc.perform(put("/films/1/like/1")).
-                andExpect(status().isOk())
+        mockMvc.perform(put("/films/1/like/1"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
 
         mockMvc.perform(put("/films/1/like/2")).
