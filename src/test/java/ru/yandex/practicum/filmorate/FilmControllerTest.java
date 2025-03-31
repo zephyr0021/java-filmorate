@@ -283,8 +283,8 @@ class FilmControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
 
-        mockMvc.perform(put("/films/1/like/2")).
-                andExpect(status().isOk())
+        mockMvc.perform(put("/films/1/like/2"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
 
         assertEquals(2, filmService.getFilmById(1L).getUsersLikes().size());
@@ -294,12 +294,12 @@ class FilmControllerTest {
     void deleteFilm() throws Exception {
         filmService.likeFilm(1L, 1L);
         filmService.likeFilm(1L, 2L);
-        mockMvc.perform(delete("/films/1/like/1")).
-                andExpect(status().isOk())
+        mockMvc.perform(delete("/films/1/like/1"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
 
-        mockMvc.perform(delete("/films/1/like/2")).
-                andExpect(status().isOk())
+        mockMvc.perform(delete("/films/1/like/2"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
 
         assertEquals(0, filmService.getFilmById(1L).getUsersLikes().size());
@@ -307,8 +307,8 @@ class FilmControllerTest {
 
     @Test
     void likeUnknownFilm() throws Exception {
-        mockMvc.perform(put("/films/4/like/1")).
-                andExpect(status().isNotFound())
+        mockMvc.perform(put("/films/4/like/1"))
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("not found"))
                 .andExpect(jsonPath("$.message").value("Фильм с id 4 не найден"));
     }
@@ -349,8 +349,8 @@ class FilmControllerTest {
 
     @Test
     void deleteLikeFilmUnkownFilm() throws Exception {
-        mockMvc.perform(delete("/films/4/like/1")).
-                andExpect(status().isNotFound())
+        mockMvc.perform(delete("/films/4/like/1"))
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("not found"))
                 .andExpect(jsonPath("$.message").value("Фильм с id 4 не найден"));
     }

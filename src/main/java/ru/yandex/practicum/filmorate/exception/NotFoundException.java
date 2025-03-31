@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.exception;
 
-import lombok.Data;
 import lombok.Getter;
 
 
