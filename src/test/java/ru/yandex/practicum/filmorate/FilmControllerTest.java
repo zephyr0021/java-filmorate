@@ -1,38 +1,54 @@
 package ru.yandex.practicum.filmorate;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
 class FilmControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
     @Autowired
     private FilmService filmService;
 
-    private final HttpHeaders headers = new HttpHeaders();
+    @Autowired
+    private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        filmService.createFilm(new Film(1L, "test1", "test_descr1", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(2L, "test2", "test_descr2", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(1L, "test@mail.ru", "testlogin1", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(2L, "test2@mail.ru", "testlogin2", "testname2", LocalDate.of(1901, 10, 21)));
+    }
+
+    @AfterEach
+    void tearDown() {
+        filmService.clearFilmsData();
+        userService.clearUsersData();
+    }
 
     static Stream<String> provideInvalidFilmJsonCreate() {
         return Stream.of(
@@ -123,173 +139,296 @@ class FilmControllerTest {
                         "  \"description\": \"Sci-fi action\",\n" +
                         "  \"releaseDate\": \"1900-12-25\",\n" +
                         "  \"duration\": -5\n" +
-                        "}" // Отрицательная длительность
-        );
-    }
+                        "}", // Отрицательная длительность
 
-    static Stream<String> provideInvalidFilmJsonIdUpdate() {
-        return Stream.of(
                 "{\n" +
+                        "  \"id\": 135,\n" +
                         "  \"name\": \"The Matrix\",\n" +
                         "  \"description\": \"Sci-fi action\",\n" +
                         "  \"releaseDate\": \"1900-12-25\",\n" +
-                        "  \"duration\": 10\n" +
-                        "}", // Без id
-
-                "{\n" +
-                        "  \"id\": 125,\n" +
-                        "  \"name\": \"The Matrix\",\n" +
-                        "  \"description\": \"Sci-fi action\",\n" +
-                        "  \"releaseDate\": \"1900-12-25\",\n" +
-                        "  \"duration\": 10\n" +
-                        "}" // Id нет в списке
+                        "  \"duration\": -5\n" +
+                        "}" // неизвестный ид
         );
     }
 
     @Test
-    void contextLoads() {
-    }
-
-    @BeforeEach
-    void setUp() {
-        headers.set("Content-Type", "application/json");
-        filmService.clearData();
-    }
-
-    @Test
-    void getFilms() {
-        filmService.addFilm(new Film(1L, "The Matrix", "Sci-fi action",
-                LocalDate.of(1900, 12, 25), 10));
-        filmService.addFilm(new Film(2L, "The Dark Knight", "Superhero thriller",
-                LocalDate.of(1900, 12, 25), 10));
-        ResponseEntity<String> response = restTemplate.getForEntity("/films", String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString(
-                "[\n" +
-                        "  {\n" +
-                        "    \"id\": 1,\n" +
-                        "    \"name\": \"The Matrix\",\n" +
-                        "    \"description\": \"Sci-fi action\",\n" +
-                        "    \"releaseDate\": \"1900-12-25\",\n" +
-                        "    \"duration\": 10\n" +
-                        "  },\n" +
-                        "  {\n" +
-                        "    \"id\": 2,\n" +
-                        "    \"name\": \"The Dark Knight\",\n" +
-                        "    \"description\": \"Superhero thriller\",\n" +
-                        "    \"releaseDate\": \"1900-12-25\",\n" +
-                        "    \"duration\": 10\n" +
-                        "  }\n" +
-                        "]"
-        );
-        assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
+    void getFilms() throws Exception {
+        mockMvc.perform(get("/films"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("test1"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].name").value("test2"));
     }
 
     @Test
-    void addFilm() {
+    void getFilmById() throws Exception {
+        mockMvc.perform(get("/films/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("test1"));
+    }
+
+    @Test
+    void getUnknownFilmById() throws Exception {
+        mockMvc.perform(get("/films/5"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("not found"))
+                .andExpect(jsonPath("$.message").value("Фильм с id 5 не найден"));
+    }
+
+    @Test
+    void addFilms() throws Exception {
         String json = "{\n" +
                 "  \"name\": \"The Matrix\",\n" +
                 "  \"description\": \"Sci-fi action\",\n" +
                 "  \"releaseDate\": \"1967-03-25\",\n" +
                 "  \"duration\": 100\n" +
                 "}";
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.POST, entity, String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        mockMvc.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.name").value("The Matrix"));
 
-        assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString(
-                "{\n" +
-                        "  \"id\": 1,\n" +
-                        "  \"name\": \"The Matrix\",\n" +
-                        "  \"description\": \"Sci-fi action\",\n" +
-                        "  \"releaseDate\": \"1967-03-25\",\n" +
-                        "  \"duration\": 100\n" +
-                        "}"
-        );
-        Film createdFilm = filmService.getFilmsMap().get(1L);
-        assertNotNull(createdFilm);
-        assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
-        assertEquals(1L, createdFilm.getId());
-        assertEquals("The Matrix", createdFilm.getName());
-        assertEquals("Sci-fi action", createdFilm.getDescription());
-        assertEquals(LocalDate.of(1967, 3, 25), createdFilm.getReleaseDate());
-        assertEquals(100, createdFilm.getDuration());
+        assertEquals(filmService.getFilmById(3L).getName(), "The Matrix");
     }
 
     @Test
-    void updateFilm() {
-        filmService.addFilm(new Film(1L, "The Matrix", "Sci-fi action",
-                LocalDate.of(1900, 12, 25), 10));
+    void updateFilms() throws Exception {
         String json = "{\n" +
                 "  \"id\": 1,\n" +
-                "  \"name\": \"The Matrix updated\",\n" +
-                "  \"description\": \"Sci-fi action updated\",\n" +
+                "  \"name\": \"test1_upd\",\n" +
+                "  \"description\": \"test_descr1_upd\",\n" +
                 "  \"releaseDate\": \"1967-03-25\",\n" +
                 "  \"duration\": 100\n" +
                 "}";
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        JsonElement expectedJson = JsonParser.parseString(json);
-        assertEquals(expectedJson, JsonParser.parseString(response.getBody()));
-        Film updatedFilm = filmService.getFilmsMap().get(1L);
-        assertNotNull(updatedFilm);
-        assertEquals(1L, updatedFilm.getId());
-        assertEquals("The Matrix updated", updatedFilm.getName());
-        assertEquals("Sci-fi action updated", updatedFilm.getDescription());
-        assertEquals(LocalDate.of(1967, 3, 25), updatedFilm.getReleaseDate());
-        assertEquals(100, updatedFilm.getDuration());
+
+        mockMvc.perform(put("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("test1_upd"));
+
+        assertEquals("test1_upd", filmService.getFilmById(1L).getName());
+        assertEquals("test_descr1_upd", filmService.getFilmById(1L).getDescription());
+        assertEquals("1967-03-25", filmService.getFilmById(1L).getReleaseDate().toString());
+        assertEquals(100, filmService.getFilmById(1L).getDuration());
     }
 
     @ParameterizedTest
     @MethodSource("provideInvalidFilmJsonCreate")
-    void addFilmValidation(String json) {
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.POST, entity, String.class);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(Objects.requireNonNull(response.getBody()).contains("\"error\":\"Bad Request\""));
+    void addFilmValidation(String json) throws Exception {
+        mockMvc.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("validation error"));
     }
 
     @Test
-    void addFilmEmptyJson() {
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.POST, entity, String.class);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(Objects.requireNonNull(response.getBody()).contains("\"error\":\"Bad Request\""));
+    void addFilmEmptyJson() throws Exception {
+        String json = "{}";
+
+        mockMvc.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("validation error"));
     }
 
     @ParameterizedTest
     @MethodSource("provideInvalidFilmJsonUpdate")
-    void updateFilmValidation(String json) {
-        filmService.addFilm(new Film(1L, "The Matrix", "Sci-fi action",
-                LocalDate.of(1900, 12, 25), 10));
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, String.class);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(Objects.requireNonNull(response.getBody()).contains("\"error\":\"Bad Request\""));
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideInvalidFilmJsonIdUpdate")
-    void updateFilmIdValidation(String json) {
-        filmService.addFilm(new Film(1L, "The Matrix", "Sci-fi action",
-                LocalDate.of(1900, 12, 25), 10));
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, String.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(Objects.requireNonNull(response.getBody()).contains("\"error\":\"Internal Server Error\""));
+    void updateFilmValidation(String json) throws Exception {
+        mockMvc.perform(put("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("validation error"));
     }
 
     @Test
-    void updateFilmEmptyJson() {
-        filmService.addFilm(new Film(1L, "The Matrix", "Sci-fi action",
-                LocalDate.of(1900, 12, 25), 10));
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, String.class);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(Objects.requireNonNull(response.getBody()).contains("\"error\":\"Bad Request\""));
+    void updateFilmWithoutId() throws Exception {
+        String json = "{\n" +
+                "  \"name\": \"The Matrix\",\n" +
+                "  \"description\": \"Sci-fi action\",\n" +
+                "  \"releaseDate\": \"1900-12-25\",\n" +
+                "  \"duration\": 10\n" +
+                "}";
+
+        mockMvc.perform(put("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("validation error"));
     }
+
+    @Test
+    void updateFilmEmptyJson() throws Exception {
+        String json = "{}";
+
+        mockMvc.perform(put("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("validation error"));
+    }
+
+    @Test
+    void likeFilm() throws Exception {
+
+        mockMvc.perform(put("/films/1/like/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+
+        mockMvc.perform(put("/films/1/like/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+
+        assertEquals(2, filmService.getFilmById(1L).getUsersLikes().size());
+    }
+
+    @Test
+    void deleteFilm() throws Exception {
+        filmService.likeFilm(1L, 1L);
+        filmService.likeFilm(1L, 2L);
+        mockMvc.perform(delete("/films/1/like/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+
+        mockMvc.perform(delete("/films/1/like/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+
+        assertEquals(0, filmService.getFilmById(1L).getUsersLikes().size());
+    }
+
+    @Test
+    void likeUnknownFilm() throws Exception {
+        mockMvc.perform(put("/films/4/like/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("not found"))
+                .andExpect(jsonPath("$.message").value("Фильм с id 4 не найден"));
+    }
+
+    @Test
+    void likeFilmUnkownUser() throws Exception {
+        mockMvc.perform(put("/films/1/like/4"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("not found"))
+                .andExpect(jsonPath("$.message").value("Юзер с id 4 не найден"));
+    }
+
+    @Test
+    void deleteLikeFilm() throws Exception {
+        filmService.likeFilm(1L, 1L);
+        mockMvc.perform(delete("/films/1/like/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+
+        assertEquals(0, filmService.getFilmById(1L).getUsersLikes().size());
+    }
+
+    @Test
+    void deleteUnknownLikeFilm() throws Exception {
+        mockMvc.perform(delete("/films/1/like/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("server error"))
+                .andExpect(jsonPath("$.message").value("Пользователь не ставил лайк фильму"));
+    }
+
+    @Test
+    void deleteLikeFilmUnkownUser() throws Exception {
+        mockMvc.perform(delete("/films/1/like/4"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("not found"))
+                .andExpect(jsonPath("$.message").value("Юзер с id 4 не найден"));
+    }
+
+    @Test
+    void deleteLikeFilmUnkownFilm() throws Exception {
+        mockMvc.perform(delete("/films/4/like/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("not found"))
+                .andExpect(jsonPath("$.message").value("Фильм с id 4 не найден"));
+    }
+
+    @Test
+    void get3PopularFilms() throws Exception {
+        filmService.createFilm(new Film(3L, "test3", "test_descr3", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(4L, "test4", "test_descr4", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(3L, "test3@mail.ru", "testlogin3", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(4L, "test4@mail.ru", "testlogin4", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.createFilm(new Film(5L, "test5", "test_descr5", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(6L, "test6", "test_descr6", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(5L, "test5@mail.ru", "testlogin5", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(6L, "test6@mail.ru", "testlogin6 ", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.likeFilm(3L, 1L);
+        filmService.likeFilm(3L, 2L);
+        filmService.likeFilm(3L, 3L);
+        filmService.likeFilm(3L, 4L);
+        filmService.likeFilm(1L, 5L);
+        filmService.likeFilm(1L, 6L);
+        filmService.likeFilm(4L, 6L);
+        filmService.likeFilm(2L, 1L);
+        filmService.likeFilm(2L, 2L);
+        mockMvc.perform(get("/films/popular?count=3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].id").value(3))
+                .andExpect(jsonPath("$[1].name").value("test1"))
+                .andExpect(jsonPath("$[2].description").value("test_descr2"));
+    }
+
+    @Test
+    void getDefaultPopularFilms() throws Exception {
+        filmService.createFilm(new Film(3L, "test3", "test_descr3", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(4L, "test4", "test_descr4", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(3L, "test3@mail.ru", "testlogin3", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(4L, "test4@mail.ru", "testlogin4", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.createFilm(new Film(5L, "test5", "test_descr5", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(6L, "test6", "test_descr6", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(5L, "test5@mail.ru", "testlogin5", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(6L, "test6@mail.ru", "testlogin6 ", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.createFilm(new Film(7L, "test7", "test_descr7", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(8L, "test8", "test_descr8", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(7L, "test7@mail.ru", "testlogin7", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(8L, "test8@mail.ru", "testlogin8", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.createFilm(new Film(9L, "test9", "test_descr9", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(10L, "test10", "test_descr10", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(9L, "test9@mail.ru", "testlogin9", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(10L, "test10@mail.ru", "testlogin10 ", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.createFilm(new Film(11L, "test11", "test_descr11", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(12L, "test12", "test_descr12", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(11L, "test11@mail.ru", "testlogin11", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(12L, "test12@mail.ru", "testlogin12", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.createFilm(new Film(13L, "test13", "test_descr13", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(14L, "test14", "test_descr14", LocalDate.of(1900, 12, 25), 10));
+        userService.createUser(new User(13L, "test13@mail.ru", "testlogin13", "testname1", LocalDate.of(1900, 12, 25)));
+        userService.createUser(new User(14L, "test14@mail.ru", "testlogin14 ", "testname2", LocalDate.of(1901, 10, 21)));
+        filmService.likeFilm(3L, 1L);
+        filmService.likeFilm(3L, 2L);
+        filmService.likeFilm(3L, 3L);
+        filmService.likeFilm(3L, 4L);
+        filmService.likeFilm(1L, 5L);
+        filmService.likeFilm(1L, 6L);
+        filmService.likeFilm(4L, 6L);
+        filmService.likeFilm(5L, 1L);
+        filmService.likeFilm(5L, 2L);
+        filmService.likeFilm(6L, 1L);
+        filmService.likeFilm(7L, 2L);
+        filmService.likeFilm(8L, 3L);
+        filmService.likeFilm(6L, 4L);
+        filmService.likeFilm(10L, 5L);
+        filmService.likeFilm(11L, 6L);
+        filmService.likeFilm(12L, 6L);
+        filmService.likeFilm(10L, 1L);
+        filmService.likeFilm(10L, 2L);
+        mockMvc.perform(get("/films/popular"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10));
+    }
+
 }
