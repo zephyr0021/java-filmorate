@@ -30,7 +30,7 @@ public class User {
     private String login;
     private String name;
 
-    @PastOrPresent(message = "Дата рождения пользователя не должна быть в будущем")
+    @PastOrPresent(message = "Дата рождения пользователя не может быть в будущем")
     private LocalDate birthday;
 
     public User(Long id, String email, String login, String name, LocalDate birthday) {
