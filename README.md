@@ -12,7 +12,73 @@ Filmorate — это база данных для социальной плат�
 - `film_likes` — лайки пользователей
 - `friends` — друзья пользователей
 
+## Ссылка на диаграмму
+https://dbdiagram.io/d/Filmorate-67fe8eaa9cea640381d41f06
+
 ## Примеры SQL-запросов
+
+### Создать все таблицы
+```sql
+CREATE TABLE "films" (
+  "id" integer PRIMARY KEY,
+  "name" varchar(100) NOT NULL,
+  "description" varchar(200),
+  "release_date" timestamp,
+  "duration" integer,
+  "rating_id" integer
+);
+
+CREATE TABLE "rating" (
+  "id" integer PRIMARY KEY,
+  "title" varchar(20)
+);
+
+CREATE TABLE "film_likes" (
+  "user_id" integer,
+  "film_id" integer,
+  PRIMARY KEY ("user_id", "film_id")
+);
+
+CREATE TABLE "users" (
+  "id" integer PRIMARY KEY,
+  "email" varchar(100) NOT NULL,
+  "login" varchar(100) NOT NULL,
+  "name" varchar(100),
+  "birthday" timestamp
+);
+
+CREATE TABLE "genres" (
+  "id" integer PRIMARY KEY,
+  "title" varchar(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE "film_genre" (
+  "film_id" integer,
+  "genre_id" integer,
+  PRIMARY KEY ("film_id", "genre_id")
+);
+
+CREATE TABLE "friends" (
+  "user_id" integer,
+  "friend_id" integer,
+  "confirmed" bool,
+  PRIMARY KEY ("user_id", "friend_id")
+);
+
+ALTER TABLE "films" ADD FOREIGN KEY ("rating_id") REFERENCES "rating" ("id");
+
+ALTER TABLE "film_likes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "film_likes" ADD FOREIGN KEY ("film_id") REFERENCES "films" ("id");
+
+ALTER TABLE "film_genre" ADD FOREIGN KEY ("film_id") REFERENCES "films" ("id");
+
+ALTER TABLE "film_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genres" ("id");
+
+ALTER TABLE "friends" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "friends" ADD FOREIGN KEY ("friend_id") REFERENCES "users" ("id");
+```
 
 ### Получить все фильмы с жанрами и рейтингом
 ```sql
