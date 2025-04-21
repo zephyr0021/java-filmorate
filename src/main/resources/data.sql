@@ -9,8 +9,3 @@ MERGE INTO rating (title) KEY (title) VALUES ('PG');
 MERGE INTO rating (title) KEY (title) VALUES ('PG-13');
 MERGE INTO rating (title) KEY (title) VALUES ('R');
 MERGE INTO rating (title) KEY (title) VALUES ('NC-17');
-
-
-
-
-
