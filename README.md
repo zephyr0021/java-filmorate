@@ -82,7 +82,7 @@ ALTER TABLE "friends" ADD FOREIGN KEY ("friend_id") REFERENCES "users" ("id");
 
 ### Получить все фильмы с жанрами и рейтингом
 ```sql
-SELECT f.id, f.name, f.description, r.title AS rating, g.title AS genre
+SELECT f.id, f.name, f.description, r.title AS rating, g.title AS filmGenre
 FROM films f
 LEFT JOIN rating r ON f.rating_id = r.id
 LEFT JOIN film_genre fg ON f.id = fg.film_id

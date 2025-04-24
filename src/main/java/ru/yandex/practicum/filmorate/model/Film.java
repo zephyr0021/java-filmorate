@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,12 +31,18 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
-    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration) {
+    private Long ratingId;
+
+    private List<Long> genreIds;
+
+    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Long ratingId, List<Long> genreIds) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.ratingId = ratingId;
+        this.genreIds = genreIds;
     }
 
     @AssertTrue(message = "Дата релиза фильма должна быть не раньше 28 декабря 1895 года")
