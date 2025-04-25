@@ -33,8 +33,13 @@ public class FilmDbStorage extends BaseDbStorage<Film> {
 
     private static final String INSERT = "INSERT INTO films (name, description, release_date, duration, rating_id) " +
             "VALUES (?, ?, ?, ?, ?);";
+
     private static final String INSERT_FILM_GENRES = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?);";
 
+    private static final String UPDATE_FILM = "UPDATE films SET name = ?, description = ?, " +
+            "release_date = ?, duration = ?, rating_id = ? WHERE id = ?;";
+
+    private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?;";
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
@@ -64,6 +69,28 @@ public class FilmDbStorage extends BaseDbStorage<Film> {
             manyInsert(INSERT_FILM_GENRES, genreIds, id);
         }
         film.setId(id);
+        return film;
+    }
+
+    public Film updateFilm(Film film) {
+        update(
+                UPDATE_FILM,
+                film.getName(),
+                film.getDescription(),
+                Date.valueOf(film.getReleaseDate()),
+                film.getDuration(),
+                film.getRatingId(),
+                film.getId()
+        );
+
+        delete(DELETE_GENRES, film.getId());
+
+        List<Long> genreIds = film.getGenreIds();
+
+        if (genreIds != null) {
+            manyInsert(INSERT_FILM_GENRES, genreIds, film.getId());
+        }
+
         return film;
     }
 

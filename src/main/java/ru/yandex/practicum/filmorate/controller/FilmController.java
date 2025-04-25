@@ -31,11 +31,11 @@ public class FilmController {
     public Film addFilm(@Valid @RequestBody Film film) {
         return filmService.createFilm(film);
     }
-//
-//    @PutMapping
-//    public Film updateFilm(@Valid @RequestBody Film newFilm) {
-//        return filmService.updateFilm(newFilm);
-//    }
+
+    @PutMapping
+    public Film updateFilm(@Valid @RequestBody Film newFilm) {
+        return filmService.updateFilm(newFilm);
+    }
 //
 //    @PutMapping("/{id}/like/{userId}")
 //    public SuccessResponse likeFilm(@PathVariable Long id, @PathVariable Long userId) {

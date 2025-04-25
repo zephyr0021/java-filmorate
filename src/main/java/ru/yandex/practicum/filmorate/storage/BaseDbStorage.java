@@ -55,4 +55,16 @@ public class BaseDbStorage<T> {
                 .toList();
         jdbc.batchUpdate(query, batchArgs);
     }
+
+    protected void update(String query, Object... params) {
+        int rowsUpdated = jdbc.update(query, params);
+
+        if (rowsUpdated == 0) {
+            throw new OtherException("Не удалось обновить данные");
+        }
+    }
+
+    protected void delete(String query, Object... params) {
+        jdbc.update(query, params);
+    }
 }
