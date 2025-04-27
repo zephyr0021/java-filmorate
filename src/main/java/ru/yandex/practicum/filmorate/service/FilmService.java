@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.OtherException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
@@ -75,28 +76,30 @@ public class FilmService {
 
         return filmStorage.updateFilm(newFilm);
     }
-//
-//    public void likeFilm(Long filmId, Long userId) {
-//        if (!getFilmById(filmId).getUsersLikes().add(userService.getUserById(userId).getId())) {
-//            log.warn("Пользователь с id {} уже ставил лайк фильму с id {}", userId, filmId);
-//            throw new OtherException("Пользователь уже ставил лайк фильму");
-//        }
-//
-//        log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
-//    }
-//
-//    public void removeLikeFilm(Long filmId, Long userId) {
-//        if (!getFilmById(filmId).getUsersLikes().remove(userService.getUserById(userId).getId())) {
-//            log.warn("Пользователь с id {} не ставил лайк фильму id {}", userId, filmId);
-//            throw new OtherException("Пользователь не ставил лайк фильму");
-//        }
-//
-//        log.info("Пользователь с id {} удалил свой лайк у фильма с id {}", userId, filmId);
-//    }
-//
-//    public Collection<Film> getPopularFilms(int count) {
-//        return filmStorage.getFilms().stream().sorted(filmComparator).limit(count).toList();
-//    }
+
+    public void likeFilm(Long filmId, Long userId) {
+        if (getFilmById(filmId).getUsersLikes().contains(userService.getUserById(userId).getId())) {
+            log.warn("Пользователь с id {} уже ставил лайк фильму с id {}", userId, filmId);
+            throw new OtherException("Пользователь уже ставил лайк фильму");
+        }
+
+        filmStorage.addLikeFilm(filmId, userId);
+        log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
+    }
+
+    public void removeLikeFilm(Long filmId, Long userId) {
+        if (!getFilmById(filmId).getUsersLikes().contains(userService.getUserById(userId).getId())) {
+            log.warn("Пользователь с id {} не ставил лайк фильму id {}", userId, filmId);
+            throw new OtherException("Пользователь не ставил лайк фильму");
+        }
+
+        filmStorage.deleteLikeFilm(filmId, userId);
+        log.info("Пользователь с id {} удалил свой лайк у фильма с id {}", userId, filmId);
+    }
+
+    public Collection<Film> getPopularFilms(int count) {
+        return filmStorage.getFilms().stream().sorted(filmComparator).limit(count).toList();
+    }
 //
 //    public void clearFilmsData() {
 //        filmStorage.clearData();

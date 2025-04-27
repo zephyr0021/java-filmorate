@@ -87,3 +87,14 @@ FROM films f
 LEFT JOIN rating r ON f.rating_id = r.id
 LEFT JOIN film_genre fg ON f.id = fg.film_id
 LEFT JOIN genres g ON fg.genre_id = g.id;
+```
+
+### Для запуска БД в серверном режиме:
+## Windows:
+```powershell
+java -cp C:\Users\<ТВОЙ_ПОЛЬЗОВАТЕЛЬ>\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar org.h2.tools.Server -tcp
+```
+## MacOS/Linus:
+```bash
+java -cp ~/.m2/repository/com/h2database/h2/2.2.224/h2-2.2.224.jar org.h2.tools.Server -tcp
+```

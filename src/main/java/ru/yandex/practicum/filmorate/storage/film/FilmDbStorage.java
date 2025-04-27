@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 @Qualifier
-public class FilmDbStorage extends BaseDbStorage<Film> {
+public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_BY_ID = "SELECT f.*, " +
             "ARRAY_AGG(DISTINCT fg.genre_id) FILTER (WHERE fg.genre_id IS NOT NULL) AS genres, " +
             "ARRAY_AGG(DISTINCT fl.user_id) FILTER (WHERE fl.user_id IS NOT NULL) AS likes " +
@@ -36,10 +36,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> {
 
     private static final String INSERT_FILM_GENRES = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?);";
 
+    private static final String INSERT_LIKE_FILM = "INSERT INTO film_likes (user_id, film_id) VALUES (?, ?);";
+
     private static final String UPDATE_FILM = "UPDATE films SET name = ?, description = ?, " +
             "release_date = ?, duration = ?, rating_id = ? WHERE id = ?;";
 
     private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?;";
+
+    private static final String DELETE_ALL = "DELETE FROM films;";
+
+    private static final String DELETE_LIKE_FILM = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?;";
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
@@ -94,7 +100,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> {
         return film;
     }
 
+    public void addLikeFilm(Long filmId, Long userId) {
+        insertWithoutGeneratedKeys(INSERT_LIKE_FILM, userId, filmId);
+    }
 
+    public void deleteLikeFilm(Long filmId, Long userId) {
+        delete(DELETE_LIKE_FILM, filmId, userId);
+    }
 
+    public void clearData() {
+        delete(DELETE_ALL);
+    }
 
 }

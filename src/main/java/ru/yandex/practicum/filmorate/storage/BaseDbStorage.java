@@ -49,6 +49,10 @@ public class BaseDbStorage<T> {
         }
     }
 
+    protected void insertWithoutGeneratedKeys(String query, Object... params) {
+        jdbc.update(query, params);
+    }
+
     protected void manyInsert(String query, List<Long> objectIds, Long relatedObjectId) {
         List<Object[]> batchArgs = objectIds.stream()
                 .map(genreId -> new Object[]{relatedObjectId, genreId})
