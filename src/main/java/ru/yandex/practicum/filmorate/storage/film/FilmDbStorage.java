@@ -31,7 +31,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "LEFT JOIN film_likes as fl ON f.id = fl.film_id " +
             "GROUP BY f.id;";
 
-    private static final String INSERT = "INSERT INTO films (name, description, release_date, duration, rating_id) " +
+    private static final String INSERT = "INSERT INTO films (name, description, release_date, duration, mpa_id) " +
             "VALUES (?, ?, ?, ?, ?);";
 
     private static final String INSERT_FILM_GENRES = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?);";
@@ -39,7 +39,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String INSERT_LIKE_FILM = "INSERT INTO film_likes (user_id, film_id) VALUES (?, ?);";
 
     private static final String UPDATE_FILM = "UPDATE films SET name = ?, description = ?, " +
-            "release_date = ?, duration = ?, rating_id = ? WHERE id = ?;";
+            "release_date = ?, duration = ?, mpa_id = ? WHERE id = ?;";
 
     private static final String DELETE_GENRES = "DELETE FROM film_genre WHERE film_id = ?;";
 
@@ -66,10 +66,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
-                film.getRatingId()
+                film.getMpa()
         );
 
-        List<Long> genreIds = film.getGenreIds();
+        List<Long> genreIds = film.getGenres();
 
         if (genreIds != null) {
             manyInsert(INSERT_FILM_GENRES, genreIds, id);
@@ -85,13 +85,13 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
-                film.getRatingId(),
+                film.getMpa(),
                 film.getId()
         );
 
         delete(DELETE_GENRES, film.getId());
 
-        List<Long> genreIds = film.getGenreIds();
+        List<Long> genreIds = film.getGenres();
 
         if (genreIds != null) {
             manyInsert(INSERT_FILM_GENRES, genreIds, film.getId());

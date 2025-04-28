@@ -5,25 +5,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.FilmRating;
-import ru.yandex.practicum.filmorate.service.FilmRatingService;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.Collection;
 
 @RestController
 @RequestMapping("/mpa")
 @RequiredArgsConstructor
-public class FilmRatingController {
+public class MpaController {
 
-    private final FilmRatingService filmRatingService;
+    private final MpaService mpaService;
 
     @GetMapping
-    public Collection<FilmRating> getRatings() {
-        return filmRatingService.getFilmRatings();
+    public Collection<Mpa> getRatings() {
+        return mpaService.getFilmRatings();
     }
 
     @GetMapping("/{ratingId}")
-    public FilmRating getRating(@PathVariable Long ratingId) {
-        return filmRatingService.getFilmRating(ratingId);
+    public Mpa getRating(@PathVariable Long ratingId) {
+        return mpaService.getFilmRating(ratingId);
     }
 }

@@ -19,7 +19,7 @@ import java.util.List;
 public class FilmService {
     private final FilmDbStorage filmStorage;
     private final FilmGenreService filmGenreService;
-    private final FilmRatingService filmRatingService;
+    private final MpaService filmRatingService;
     private final UserService userService;
     private final Comparator<Film> filmComparator = Comparator.comparing((Film film) -> film.getUsersLikes().size()).reversed();
 
@@ -33,8 +33,8 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        List<Long> filmGenres = film.getGenreIds();
-        Long ratingId = film.getRatingId();
+        List<Long> filmGenres = film.getGenres();
+        Long ratingId = film.getMpa();
         if (ratingId != null) {
             filmRatingService.getFilmRating(ratingId);
         }
@@ -42,7 +42,7 @@ public class FilmService {
         if (filmGenres != null ) {
             filmGenres.forEach(filmGenreService::getGenreById);
         } else {
-            film.setGenreIds(List.of());
+            film.setGenres(List.of());
         }
 
         return filmStorage.addFilm(film);
@@ -61,8 +61,8 @@ public class FilmService {
                     return new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
                 });
 
-        Long ratingId = newFilm.getRatingId();
-        List<Long> filmGenres = newFilm.getGenreIds();
+        Long ratingId = newFilm.getMpa();
+        List<Long> filmGenres = newFilm.getGenres();
 
         if (ratingId != null) {
             filmRatingService.getFilmRating(ratingId);
@@ -71,7 +71,7 @@ public class FilmService {
         if (filmGenres != null ) {
             filmGenres.forEach(filmGenreService::getGenreById);
         } else {
-            newFilm.setGenreIds(List.of());
+            newFilm.setGenres(List.of());
         }
 
         return filmStorage.updateFilm(newFilm);

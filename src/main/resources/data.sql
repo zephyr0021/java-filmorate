@@ -4,19 +4,19 @@ MERGE INTO genres (title) KEY (title) VALUES ('Комедия');
 MERGE INTO genres (title) KEY (title) VALUES ('Детектив');
 MERGE INTO genres (title) KEY (title) VALUES ('Триллер');
 MERGE INTO genres (title) KEY (title) VALUES ('Ужасы');
-MERGE INTO rating (title) KEY (title) VALUES ('G');
-MERGE INTO rating (title) KEY (title) VALUES ('PG');
-MERGE INTO rating (title) KEY (title) VALUES ('PG-13');
-MERGE INTO rating (title) KEY (title) VALUES ('R');
-MERGE INTO rating (title) KEY (title) VALUES ('NC-17');
-MERGE INTO films (name, description, release_date, duration, rating_id)
-KEY (name, description, release_date, duration, rating_id) VALUES
+MERGE INTO mpa (title) KEY (title) VALUES ('G');
+MERGE INTO mpa (title) KEY (title) VALUES ('PG');
+MERGE INTO mpa (title) KEY (title) VALUES ('PG-13');
+MERGE INTO mpa (title) KEY (title) VALUES ('R');
+MERGE INTO mpa (title) KEY (title) VALUES ('NC-17');
+MERGE INTO films (name, description, release_date, duration, mpa_id)
+KEY (name, description, release_date, duration, mpa_id) VALUES
 ('testname1', 'testdescription1', '2025-01-01', 1000, 1);
-MERGE INTO films (name, description, release_date, duration, rating_id)
-KEY (name, description, release_date, duration, rating_id) VALUES
+MERGE INTO films (name, description, release_date, duration, mpa_id)
+KEY (name, description, release_date, duration, mpa_id) VALUES
 ( 'testname2', 'testdescription2', '2025-01-01', 1000, 5);
-MERGE INTO films (name, description, release_date, duration, rating_id)
-KEY (name, description, release_date, duration, rating_id) VALUES
+MERGE INTO films (name, description, release_date, duration, mpa_id)
+KEY (name, description, release_date, duration, mpa_id) VALUES
 ( 'testname3', 'testdescription3', '2023-01-01', 10, 5);
 MERGE INTO users (email, login, name, BIRTHDAY) KEY (email, login, name, BIRTHDAY) VALUES
 ('test1@mail.ru', 'testlogin1', 'testname1', '2002-01-01');

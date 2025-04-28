@@ -31,18 +31,18 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
-    private Long ratingId;
+    private Long mpa;
 
-    private List<Long> genreIds;
+    private List<Long> genres;
 
-    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Long ratingId, List<Long> genreIds) {
+    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Long mpa, List<Long> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.ratingId = ratingId;
-        this.genreIds = genreIds;
+        this.mpa = mpa;
+        this.genres = genres;
     }
 
     @AssertTrue(message = "Дата релиза фильма должна быть не раньше 28 декабря 1895 года")
