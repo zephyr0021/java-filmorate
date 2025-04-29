@@ -7,11 +7,12 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.OtherException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -19,7 +20,7 @@ import java.util.List;
 public class FilmService {
     private final FilmDbStorage filmStorage;
     private final FilmGenreService filmGenreService;
-    private final MpaService filmRatingService;
+    private final MpaService mpaService;
     private final UserService userService;
     private final Comparator<Film> filmComparator = Comparator.comparing((Film film) -> film.getUsersLikes().size()).reversed();
 
@@ -33,20 +34,8 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        List<Long> filmGenres = film.getGenres();
-        Long ratingId = film.getMpa();
-        if (ratingId != null) {
-            filmRatingService.getFilmRating(ratingId);
-        }
-
-        if (filmGenres != null ) {
-            filmGenres.forEach(filmGenreService::getGenreById);
-        } else {
-            film.setGenres(List.of());
-        }
-
-        return filmStorage.addFilm(film);
-
+        Film validationFilm = validateAndSetInfoMpaAndGenres(film);
+        return filmStorage.addFilm(validationFilm);
     }
 
     public Film updateFilm(Film newFilm) {
@@ -61,20 +50,9 @@ public class FilmService {
                     return new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
                 });
 
-        Long ratingId = newFilm.getMpa();
-        List<Long> filmGenres = newFilm.getGenres();
+        Film newValidationFilm = validateAndSetInfoMpaAndGenres(newFilm);
 
-        if (ratingId != null) {
-            filmRatingService.getFilmRating(ratingId);
-        }
-
-        if (filmGenres != null ) {
-            filmGenres.forEach(filmGenreService::getGenreById);
-        } else {
-            newFilm.setGenres(List.of());
-        }
-
-        return filmStorage.updateFilm(newFilm);
+        return filmStorage.updateFilm(newValidationFilm);
     }
 
     public void likeFilm(Long filmId, Long userId) {
@@ -99,6 +77,26 @@ public class FilmService {
 
     public Collection<Film> getPopularFilms(int count) {
         return filmStorage.getFilms().stream().sorted(filmComparator).limit(count).toList();
+    }
+
+    private Film validateAndSetInfoMpaAndGenres(Film film) {
+        Set<FilmGenre> filmGenres = film.getGenres();
+        Mpa mpa = film.getMpa();
+
+        if (mpa != null) {
+            Long mpaId = mpa.getId();
+            mpaService.getMpa(mpaId);
+            mpa.setName(mpaService.getMpa(mpaId).getName());
+        }
+
+        if (filmGenres != null && !filmGenres.isEmpty()) {
+            filmGenres.forEach(genre -> filmGenreService.getGenreById(genre.getId()));
+
+            film.setGenres(filmGenres.stream()
+                    .peek(genre -> genre.setName(filmGenreService.getGenreById(genre.getId()).getName()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new)));
+        }
+        return film;
     }
 //
 //    public void clearFilmsData() {

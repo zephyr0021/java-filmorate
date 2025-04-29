@@ -17,8 +17,8 @@ public class MpaService {
         return mpaDbStorage.getAllRatings();
     }
 
-    public Mpa getFilmRating(Long id) {
-        return mpaDbStorage.getRating(id)
+    public Mpa getMpa(Long id) {
+        return mpaDbStorage.getMpa(id)
                 .orElseThrow(() -> new NotFoundException("Рейтинг с id " + id + " не найден"));
     }
 }

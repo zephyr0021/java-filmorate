@@ -24,6 +24,6 @@ public class MpaController {
 
     @GetMapping("/{ratingId}")
     public Mpa getRating(@PathVariable Long ratingId) {
-        return mpaService.getFilmRating(ratingId);
+        return mpaService.getMpa(ratingId);
     }
 }

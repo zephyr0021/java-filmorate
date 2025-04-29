@@ -10,5 +10,5 @@ public class FilmGenre {
     private Long id;
 
     @NotBlank(message = "Название жанра не может быть пустым")
-    private String title;
+    private String name;
 }

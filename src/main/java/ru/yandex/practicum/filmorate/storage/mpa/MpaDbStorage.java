@@ -19,7 +19,7 @@ public class MpaDbStorage extends BaseDbStorage<Mpa> implements MpaStorage {
         super(jdbc, mapper);
     }
 
-    public Optional<Mpa> getRating(Long id) {
+    public Optional<Mpa> getMpa(Long id) {
         return findOne(FIND_BY_ID, id);
     }
 

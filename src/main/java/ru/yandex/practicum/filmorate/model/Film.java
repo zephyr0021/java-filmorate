@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -31,11 +31,12 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
-    private Long mpa;
+    private Mpa mpa;
 
-    private List<Long> genres;
+    private LinkedHashSet<FilmGenre> genres;
 
-    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Long mpa, List<Long> genres) {
+    public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa,
+                LinkedHashSet<FilmGenre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;

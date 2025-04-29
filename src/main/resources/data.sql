@@ -1,9 +1,9 @@
-MERGE INTO genres (title) KEY (title) VALUES ('Драма');
-MERGE INTO genres (title) KEY (title) VALUES ('Боевик');
 MERGE INTO genres (title) KEY (title) VALUES ('Комедия');
-MERGE INTO genres (title) KEY (title) VALUES ('Детектив');
+MERGE INTO genres (title) KEY (title) VALUES ('Драма');
+MERGE INTO genres (title) KEY (title) VALUES ('Мультфильм');
 MERGE INTO genres (title) KEY (title) VALUES ('Триллер');
-MERGE INTO genres (title) KEY (title) VALUES ('Ужасы');
+MERGE INTO genres (title) KEY (title) VALUES ('Документальный');
+MERGE INTO genres (title) KEY (title) VALUES ('Боевик');
 MERGE INTO mpa (title) KEY (title) VALUES ('G');
 MERGE INTO mpa (title) KEY (title) VALUES ('PG');
 MERGE INTO mpa (title) KEY (title) VALUES ('PG-13');

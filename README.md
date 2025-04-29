@@ -84,7 +84,7 @@ ALTER TABLE "friends" ADD FOREIGN KEY ("friend_id") REFERENCES "users" ("id");
 ```sql
 SELECT f.id, f.name, f.description, r.title AS rating, g.title AS filmGenre
 FROM films f
-LEFT JOIN rating r ON f.rating_id = r.id
+LEFT JOIN mpa r ON f.rating_id = r.id
 LEFT JOIN film_genre fg ON f.id = fg.film_id
 LEFT JOIN genres g ON fg.genre_id = g.id;
 ```

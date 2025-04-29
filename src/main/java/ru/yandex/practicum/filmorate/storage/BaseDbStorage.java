@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BaseDbStorage<T> {
@@ -53,7 +54,7 @@ public class BaseDbStorage<T> {
         jdbc.update(query, params);
     }
 
-    protected void manyInsert(String query, List<Long> objectIds, Long relatedObjectId) {
+    protected void manyInsert(String query, Set<Long> objectIds, Long relatedObjectId) {
         List<Object[]> batchArgs = objectIds.stream()
                 .map(genreId -> new Object[]{relatedObjectId, genreId})
                 .toList();
