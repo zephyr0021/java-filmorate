@@ -98,8 +98,8 @@ public class FilmService {
         }
         return film;
     }
-//
-//    public void clearFilmsData() {
-//        filmStorage.clearData();
-//    }
+
+    public void clearFilmsData() {
+        filmStorage.clearData();
+    }
 }

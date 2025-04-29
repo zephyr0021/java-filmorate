@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 import ru.yandex.practicum.filmorate.storage.mappers.UserRowMapper;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,17 @@ public class UserDbStorage extends BaseDbStorage<User> {
             "LEFT JOIN friends AS f ON u.id = f.user_id " +
             "GROUP BY u.id;";
 
+    private static final String INSERT = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+
+    private static final String UPDATE_USER = "UPDATE users SET email = ?, login = ?, " +
+            "name = ?, birthday = ? WHERE id = ?";
+
+    private static final String INSERT_FRIEND = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
+
+    private static final String DELETE_FRIEND = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+
+    private static final String DELETE_ALL = "DELETE FROM users";
+
     public UserDbStorage(JdbcTemplate jdbc, UserRowMapper mapper) {
         super(jdbc, mapper);
     }
@@ -35,5 +47,43 @@ public class UserDbStorage extends BaseDbStorage<User> {
 
     public List<User> getAllUsers() {
         return findMany(FIND_ALL);
+    }
+
+    public User createUser(User user) {
+        long id = insert(
+                INSERT,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                Date.valueOf(user.getBirthday())
+        );
+
+        user.setId(id);
+        return user;
+    }
+
+    public User updateUser(User user) {
+        update(
+                UPDATE_USER,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
+                user.getId()
+        );
+
+        return user;
+    }
+
+    public void addFriend(Long userId, Long friendId) {
+        insertWithoutGeneratedKeys(INSERT_FRIEND, userId, friendId);
+    }
+
+    public void deleteFriend(Long userId, Long friendId) {
+        delete(DELETE_FRIEND, userId, friendId);
+    }
+
+    public void clearData() {
+        delete(DELETE_ALL);
     }
 }

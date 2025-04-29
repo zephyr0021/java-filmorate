@@ -80,8 +80,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 mpaId
         );
 
-        validateAndInsertGenres(film);
         film.setId(id);
+        validateAndInsertGenres(film);
         return film;
     }
 
