@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -11,6 +13,8 @@ import java.util.Optional;
 
 @Component
 @Slf4j
+@Primary
+@Profile("test")
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
@@ -40,6 +44,16 @@ public class InMemoryUserStorage implements UserStorage {
         Optional.ofNullable(newUser.getLogin()).ifPresent(oldUser::setLogin);
         log.info("Обновлен юзер: {}", newUser);
         return oldUser;
+    }
+
+    public void addFriend(Long userId, Long friendId) {
+        User user = users.get(userId);
+        user.getFriends().add(friendId);
+    }
+
+    public void deleteFriend(Long userId, Long friendId) {
+        User user = users.get(userId);
+        user.getFriends().remove(friendId);
     }
 
     public void clearData() {

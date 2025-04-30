@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -16,7 +17,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-@Qualifier
+@Primary
+@Profile("!test")
 public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_BY_ID = "SELECT f.*, " +
             "mpa.title AS mpa_title, " +

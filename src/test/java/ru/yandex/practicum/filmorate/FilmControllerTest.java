@@ -9,13 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class FilmControllerTest {
 
     @Autowired
@@ -36,10 +41,19 @@ class FilmControllerTest {
     @Autowired
     private UserService userService;
 
+
     @BeforeEach
     void setUp() {
-        filmService.createFilm(new Film(1L, "test1", "test_descr1", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(2L, "test2", "test_descr2", LocalDate.of(1900, 12, 25), 10));
+        Mpa mpa = new Mpa();
+        mpa.setId(1L);
+        mpa.setName("PG");
+        LinkedHashSet<FilmGenre> genres = new LinkedHashSet<>();
+        FilmGenre fg1 = new FilmGenre();
+        fg1.setId(1L);
+        fg1.setName("Horror");
+        genres.add(fg1);
+        filmService.createFilm(new Film(1L, "test1", "test_descr1", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(2L, "test2", "test_descr2", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(1L, "test@mail.ru", "testlogin1", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(2L, "test2@mail.ru", "testlogin2", "testname2", LocalDate.of(1901, 10, 21)));
     }
@@ -357,12 +371,20 @@ class FilmControllerTest {
 
     @Test
     void get3PopularFilms() throws Exception {
-        filmService.createFilm(new Film(3L, "test3", "test_descr3", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(4L, "test4", "test_descr4", LocalDate.of(1900, 12, 25), 10));
+        Mpa mpa = new Mpa();
+        mpa.setId(1L);
+        mpa.setName("PG");
+        LinkedHashSet<FilmGenre> genres = new LinkedHashSet<>();
+        FilmGenre fg1 = new FilmGenre();
+        fg1.setId(1L);
+        fg1.setName("Horror");
+        genres.add(fg1);
+        filmService.createFilm(new Film(3L, "test3", "test_descr3", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(4L, "test4", "test_descr4", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(3L, "test3@mail.ru", "testlogin3", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(4L, "test4@mail.ru", "testlogin4", "testname2", LocalDate.of(1901, 10, 21)));
-        filmService.createFilm(new Film(5L, "test5", "test_descr5", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(6L, "test6", "test_descr6", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(5L, "test5", "test_descr5", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(6L, "test6", "test_descr6", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(5L, "test5@mail.ru", "testlogin5", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(6L, "test6@mail.ru", "testlogin6 ", "testname2", LocalDate.of(1901, 10, 21)));
         filmService.likeFilm(3L, 1L);
@@ -384,28 +406,36 @@ class FilmControllerTest {
 
     @Test
     void getDefaultPopularFilms() throws Exception {
-        filmService.createFilm(new Film(3L, "test3", "test_descr3", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(4L, "test4", "test_descr4", LocalDate.of(1900, 12, 25), 10));
+        Mpa mpa = new Mpa();
+        mpa.setId(1L);
+        mpa.setName("PG");
+        LinkedHashSet<FilmGenre> genres = new LinkedHashSet<>();
+        FilmGenre fg1 = new FilmGenre();
+        fg1.setId(1L);
+        fg1.setName("Horror");
+        genres.add(fg1);
+        filmService.createFilm(new Film(3L, "test3", "test_descr3", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(4L, "test4", "test_descr4", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(3L, "test3@mail.ru", "testlogin3", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(4L, "test4@mail.ru", "testlogin4", "testname2", LocalDate.of(1901, 10, 21)));
-        filmService.createFilm(new Film(5L, "test5", "test_descr5", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(6L, "test6", "test_descr6", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(5L, "test5", "test_descr5", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(6L, "test6", "test_descr6", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(5L, "test5@mail.ru", "testlogin5", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(6L, "test6@mail.ru", "testlogin6 ", "testname2", LocalDate.of(1901, 10, 21)));
-        filmService.createFilm(new Film(7L, "test7", "test_descr7", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(8L, "test8", "test_descr8", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(7L, "test7", "test_descr7", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(8L, "test8", "test_descr8", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(7L, "test7@mail.ru", "testlogin7", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(8L, "test8@mail.ru", "testlogin8", "testname2", LocalDate.of(1901, 10, 21)));
-        filmService.createFilm(new Film(9L, "test9", "test_descr9", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(10L, "test10", "test_descr10", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(9L, "test9", "test_descr9", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(10L, "test10", "test_descr10", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(9L, "test9@mail.ru", "testlogin9", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(10L, "test10@mail.ru", "testlogin10 ", "testname2", LocalDate.of(1901, 10, 21)));
-        filmService.createFilm(new Film(11L, "test11", "test_descr11", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(12L, "test12", "test_descr12", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(11L, "test11", "test_descr11", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(12L, "test12", "test_descr12", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(11L, "test11@mail.ru", "testlogin11", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(12L, "test12@mail.ru", "testlogin12", "testname2", LocalDate.of(1901, 10, 21)));
-        filmService.createFilm(new Film(13L, "test13", "test_descr13", LocalDate.of(1900, 12, 25), 10));
-        filmService.createFilm(new Film(14L, "test14", "test_descr14", LocalDate.of(1900, 12, 25), 10));
+        filmService.createFilm(new Film(13L, "test13", "test_descr13", LocalDate.of(1900, 12, 25), 10, mpa, genres));
+        filmService.createFilm(new Film(14L, "test14", "test_descr14", LocalDate.of(1900, 12, 25), 10, mpa, genres));
         userService.createUser(new User(13L, "test13@mail.ru", "testlogin13", "testname1", LocalDate.of(1900, 12, 25)));
         userService.createUser(new User(14L, "test14@mail.ru", "testlogin14 ", "testname2", LocalDate.of(1901, 10, 21)));
         filmService.likeFilm(3L, 1L);

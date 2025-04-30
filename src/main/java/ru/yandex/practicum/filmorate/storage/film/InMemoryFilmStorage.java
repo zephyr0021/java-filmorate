@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,6 +14,8 @@ import java.util.Optional;
 
 @Component
 @Slf4j
+@Primary
+@Profile("test")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
@@ -41,6 +45,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         Optional.ofNullable(newFilm.getDuration()).ifPresent(oldFilm::setDuration);
         log.info("Обновлен фильм: {}", newFilm);
         return oldFilm;
+    }
+
+    public void addLikeFilm(Long filmId, Long userId) {
+        films.get(filmId).getUsersLikes().add(userId);
+    }
+
+    public void deleteLikeFilm(Long filmId, Long userId) {
+        films.get(filmId).getUsersLikes().remove(userId);
     }
 
     private long getNextId() {

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.mpa;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Primary
+@Profile("!test")
 public class MpaDbStorage extends BaseDbStorage<Mpa> implements MpaStorage {
 
     private static final String FIND_BY_ID = "SELECT * FROM mpa WHERE id = ?";

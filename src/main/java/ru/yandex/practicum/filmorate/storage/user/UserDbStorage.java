@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
@@ -7,11 +9,13 @@ import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 import ru.yandex.practicum.filmorate.storage.mappers.UserRowMapper;
 
 import java.sql.Date;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
-public class UserDbStorage extends BaseDbStorage<User> {
+@Primary
+@Profile("!test")
+public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     private static final String FIND_BY_ID = "SELECT u.*, " +
                     "ARRAY_AGG(DISTINCT f.friend_id) FILTER (WHERE f.friend_id IS NOT NULL) AS friends " +
@@ -45,11 +49,11 @@ public class UserDbStorage extends BaseDbStorage<User> {
         return findOne(FIND_BY_ID, id);
     }
 
-    public List<User> getAllUsers() {
+    public Collection<User> getUsers() {
         return findMany(FIND_ALL);
     }
 
-    public User createUser(User user) {
+    public User addUser(User user) {
         long id = insert(
                 INSERT,
                 user.getEmail(),

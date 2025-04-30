@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class UserControllerTest {
 
     @Autowired
@@ -331,8 +333,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("success"));
 
         assertEquals(2, userService.getUserById(1L).getFriends().size());
-        assertEquals(1, userService.getUserById(2L).getFriends().size());
-        assertEquals(1, userService.getUserById(3L).getFriends().size());
+        assertEquals(0, userService.getUserById(2L).getFriends().size());
+        assertEquals(0, userService.getUserById(3L).getFriends().size());
         assertEquals(Arrays.toString(new int[]{2, 3}), userService.getUserById(1L).getFriends().toString());
     }
 

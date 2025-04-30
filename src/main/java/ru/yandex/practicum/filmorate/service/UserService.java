@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.OtherException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.Set;
@@ -16,10 +16,10 @@ import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
-    private final UserDbStorage userStorage;
+    private final UserStorage userStorage;
 
     public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userStorage.getUsers();
     }
 
     public User getUserById(Long id) {
@@ -33,7 +33,7 @@ public class UserService {
                     user.getLogin());
         }
 
-        return userStorage.createUser(user);
+        return userStorage.addUser(user);
     }
 
     public User updateUser(User newUser) {
