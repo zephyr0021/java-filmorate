@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.service.FilmGenreService;
 import java.util.Collection;
 
 @RestController
-@RequestMapping(path="/genres")
+@RequestMapping("/genres")
 @RequiredArgsConstructor
 public class FilmGenreController {
 
