@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.genre;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
@@ -11,9 +9,7 @@ import ru.yandex.practicum.filmorate.storage.mappers.GenreRowMapper;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-@Primary
-@Profile("!test")
+@Repository("GenreDbStorage")
 public class GenreDbStorage extends BaseDbStorage<FilmGenre> implements GenreStorage {
 
     private static final String FIND_BY_ID = "SELECT * FROM genres WHERE id = ?;";

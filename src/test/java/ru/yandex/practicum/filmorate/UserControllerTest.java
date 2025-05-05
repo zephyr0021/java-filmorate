@@ -1,25 +1,21 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.model.User;
 
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -29,7 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@AutoConfigureTestDatabase
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserControllerTest {
 
     @Autowired
@@ -121,17 +118,10 @@ public class UserControllerTest {
         );
     }
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
-        userService.createUser(new User(1L, "test@mail.ru", "testlogin1", "testname1", LocalDate.of(1900, 12, 25)));
-        userService.createUser(new User(2L, "test2@mail.ru", "testlogin2", "testname2", LocalDate.of(1901, 10, 21)));
-        userService.createUser(new User(3L, "test3@mail.ru", "testlogin3", "testname3", LocalDate.of(1900, 12, 25)));
-        userService.createUser(new User(4L, "test4@mail.ru", "testlogin4", "testname4", LocalDate.of(1901, 10, 21)));
-    }
-
-    @AfterEach
-    void tearDown() {
-        userService.clearUsersData();
+        userService.addFriend(1L, 2L);
+        userService.addFriend(1L, 3L);
     }
 
     @Test
@@ -141,7 +131,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[1].name").value("testname2"))
                 .andExpect(jsonPath("$[2].email").value("test3@mail.ru"))
-                .andExpect(jsonPath("$[3].login").value("testlogin4"));
+                .andExpect(jsonPath("$[2].login").value("testlogin3"));
     }
 
     @Test
@@ -149,7 +139,7 @@ public class UserControllerTest {
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("testname1"));
+                .andExpect(jsonPath("$.name").value("testlogin1upd"));
     }
 
     @Test
@@ -172,17 +162,17 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.id").value(4))
                 .andExpect(jsonPath("$.name").value("Test User"));
 
-        assertEquals(userService.getUserById(5L).getLogin(), "testlogin");
+        assertEquals(userService.getUserById(4L).getLogin(), "testlogin");
     }
 
     @Test
     void addUserWithoutName() throws Exception {
         String json = "{\n" +
-                "  \"login\": \"testlogin\",\n" +
-                "  \"email\": \"mail@mail.ru\",\n" +
+                "  \"login\": \"testloginname\",\n" +
+                "  \"email\": \"testloginname@mail.ru\",\n" +
                 "  \"birthday\": \"1946-08-20\"\n" +
                 "}";
 
@@ -191,8 +181,8 @@ public class UserControllerTest {
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(5))
-                .andExpect(jsonPath("$.name").value("testlogin"));
-        assertEquals(userService.getUserById(5L).getName(), "testlogin");
+                .andExpect(jsonPath("$.name").value("testloginname"));
+        assertEquals(userService.getUserById(5L).getName(), "testloginname");
     }
 
     @Test
@@ -324,24 +314,17 @@ public class UserControllerTest {
 
     @Test
     void addFriend() throws Exception {
-        mockMvc.perform(put("/users/1/friends/2"))
+        userService.removeFriend(2L, 3L);
+        mockMvc.perform(put("/users/2/friends/3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
-
-        mockMvc.perform(put("/users/1/friends/3"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("success"));
-
-        assertEquals(2, userService.getUserById(1L).getFriends().size());
-        assertEquals(0, userService.getUserById(2L).getFriends().size());
+        assertEquals(1, userService.getUserById(2L).getFriends().size());
         assertEquals(0, userService.getUserById(3L).getFriends().size());
-        assertEquals(Arrays.toString(new int[]{2, 3}), userService.getUserById(1L).getFriends().toString());
+        assertEquals(Arrays.toString(new int[]{3}), userService.getUserById(2L).getFriends().toString());
     }
 
     @Test
     void removeFriend() throws Exception {
-        userService.addFriend(1L, 2L);
-        userService.addFriend(1L, 3L);
 
         mockMvc.perform(delete("/users/1/friends/2"))
                 .andExpect(status().isOk())
@@ -352,7 +335,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("success"));
 
         assertEquals(0, userService.getUserById(1L).getFriends().size());
-        assertEquals(0, userService.getUserById(2L).getFriends().size());
+        assertEquals(1, userService.getUserById(2L).getFriends().size());
         assertEquals(0, userService.getUserById(3L).getFriends().size());
     }
 
@@ -374,7 +357,6 @@ public class UserControllerTest {
     @Test
     void addFriendUserFriend() throws Exception {
         userService.addFriend(1L, 2L);
-
         mockMvc.perform(put("/users/1/friends/2"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("Пользователи уже являются друзьями"));
@@ -382,9 +364,6 @@ public class UserControllerTest {
 
     @Test
     void getUserFriends() throws Exception {
-        userService.addFriend(1L, 2L);
-        userService.addFriend(1L, 3L);
-
         mockMvc.perform(get("/users/1/friends"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -394,15 +373,11 @@ public class UserControllerTest {
 
     @Test
     void getCommonUserFriends() throws Exception {
-        userService.addFriend(1L, 2L);
-        userService.addFriend(1L, 3L);
-        userService.addFriend(4L, 2L);
-        userService.addFriend(4L, 3L);
-        mockMvc.perform(get("/users/1/friends/common/4"))
+        userService.addFriend(2L, 3L);
+        mockMvc.perform(get("/users/1/friends/common/2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("testname3"));
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(3));
     }
 
 

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.OtherException;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
     private final FilmGenreService filmGenreService;
@@ -24,6 +23,13 @@ public class FilmService {
     private final UserService userService;
     private final Comparator<Film> filmComparator = Comparator.comparing((Film film) -> film.getUsersLikes().size()).reversed();
 
+    public FilmService(UserService userService, MpaService mpaService, FilmGenreService filmGenreService,
+                       @Qualifier("FilmDbStorage") FilmStorage filmStorage) {
+        this.userService = userService;
+        this.mpaService = mpaService;
+        this.filmGenreService = filmGenreService;
+        this.filmStorage = filmStorage;
+    }
 
     public Collection<Film> getAllFilms() {
         return filmStorage.getFilms();
