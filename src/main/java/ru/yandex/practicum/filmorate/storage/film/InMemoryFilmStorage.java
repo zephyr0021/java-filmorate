@@ -43,6 +43,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         return oldFilm;
     }
 
+    public void addLikeFilm(Long filmId, Long userId) {
+        films.get(filmId).getUsersLikes().add(userId);
+    }
+
+    public void deleteLikeFilm(Long filmId, Long userId) {
+        films.get(filmId).getUsersLikes().remove(userId);
+    }
+
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()

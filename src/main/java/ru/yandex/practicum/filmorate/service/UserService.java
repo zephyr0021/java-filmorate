@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.OtherException;
@@ -10,12 +10,16 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     public Collection<User> getAllUsers() {
         return userStorage.getUsers();
@@ -40,8 +44,7 @@ public class UserService {
             log.warn("В запросе на обновление юзера не передан id");
             throw new ValidationException("Id не может быть пустым");
         }
-
-        userStorage.getUser(newUser.getId())
+        User oldUser = userStorage.getUser(newUser.getId())
                 .orElseThrow(() -> {
                     log.warn("В запросе на обновление пользователя передан неизвестный id - {}", newUser.getId());
                     return new NotFoundException("Пользователь с id " + newUser.getId() + " не найден");
@@ -53,35 +56,40 @@ public class UserService {
                     newUser.getLogin());
         }
 
-        return userStorage.updateUser(newUser);
+        Set<Long> userFriends = oldUser.getFriends();
 
+        newUser.setFriends(userFriends);
+        return userStorage.updateUser(newUser);
 
     }
 
     public void addFriend(Long id, Long friendId) {
         User user = getUserById(id);
-        User friend = getUserById(friendId);
+        getUserById(friendId);
 
         if (id.equals(friendId)) {
             log.warn("Пользователь не может добавить сам себя в друзья");
             throw new OtherException("Пользователь не может добавить сам себя в друзья");
         }
 
-        if (!user.getFriends().add(friendId) || !friend.getFriends().add(id)) {
+        if (user.getFriends().contains(friendId)) {
             log.warn("Пользователи с id {} и id {} уже являются друзьями", id, friendId);
             throw new OtherException("Пользователи уже являются друзьями");
         }
 
+        userStorage.addFriend(id, friendId);
         log.info("Пользователь с id {} добавил в друзья пользователя с id {}", id, friendId);
     }
 
     public void removeFriend(Long id, Long friendId) {
         User user = getUserById(id);
-        User friend = getUserById(friendId);
+        getUserById(friendId);
 
-        if (!user.getFriends().remove(friendId) || !friend.getFriends().remove(id)) {
+        if (!user.getFriends().contains(friendId)) {
             log.warn("У пользователя с id {} не найден друг с id {}", id, friendId);
         }
+
+        userStorage.deleteFriend(id, friendId);
 
         log.info("Пользователь с id {} удалил из друзей пользователя с id {}", id, friendId);
     }
