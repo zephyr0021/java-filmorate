@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -26,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class UserControllerTest {
 
     @Autowired
@@ -118,12 +120,6 @@ public class UserControllerTest {
         );
     }
 
-    @BeforeAll
-    void setUp() {
-        userService.addFriend(1L, 2L);
-        userService.addFriend(1L, 3L);
-    }
-
     @Test
     void getAllUsers() throws Exception {
         mockMvc.perform(get("/users"))
@@ -139,7 +135,7 @@ public class UserControllerTest {
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("testlogin1upd"));
+                .andExpect(jsonPath("$.name").value("testname1"));
     }
 
     @Test
@@ -180,9 +176,9 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.id").value(4))
                 .andExpect(jsonPath("$.name").value("testloginname"));
-        assertEquals(userService.getUserById(5L).getName(), "testloginname");
+        assertEquals(userService.getUserById(4L).getName(), "testloginname");
     }
 
     @Test
@@ -325,7 +321,8 @@ public class UserControllerTest {
 
     @Test
     void removeFriend() throws Exception {
-
+        userService.addFriend(1L, 2L);
+        userService.addFriend(1L, 3L);
         mockMvc.perform(delete("/users/1/friends/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
@@ -335,7 +332,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("success"));
 
         assertEquals(0, userService.getUserById(1L).getFriends().size());
-        assertEquals(1, userService.getUserById(2L).getFriends().size());
         assertEquals(0, userService.getUserById(3L).getFriends().size());
     }
 
@@ -364,6 +360,8 @@ public class UserControllerTest {
 
     @Test
     void getUserFriends() throws Exception {
+        userService.addFriend(1L, 2L);
+        userService.addFriend(1L, 3L);
         mockMvc.perform(get("/users/1/friends"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -373,6 +371,7 @@ public class UserControllerTest {
 
     @Test
     void getCommonUserFriends() throws Exception {
+        userService.addFriend(1L, 3L);
         userService.addFriend(2L, 3L);
         mockMvc.perform(get("/users/1/friends/common/2"))
                 .andExpect(status().isOk())

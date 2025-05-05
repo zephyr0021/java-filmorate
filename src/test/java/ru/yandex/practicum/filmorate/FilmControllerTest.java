@@ -8,8 +8,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.service.FilmGenreService;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.MpaService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.stream.Stream;
@@ -22,6 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class FilmControllerTest {
 
     @Autowired
@@ -32,6 +37,12 @@ class FilmControllerTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MpaService mpaService;
+
+    @Autowired
+    private FilmGenreService filmGenreService;
 
     static Stream<String> provideInvalidFilmJsonCreate() {
         return Stream.of(
@@ -139,7 +150,7 @@ class FilmControllerTest {
         mockMvc.perform(get("/films"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("test1_upd"))
+                .andExpect(jsonPath("$[0].name").value("testname1"))
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].name").value("testname2"));
     }
@@ -149,7 +160,7 @@ class FilmControllerTest {
         mockMvc.perform(get("/films/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("test1_upd"));
+                .andExpect(jsonPath("$.name").value("testname1"));
     }
 
     @Test
@@ -275,6 +286,10 @@ class FilmControllerTest {
 
     @Test
     void deleteLikeFilm() throws Exception {
+        filmService.likeFilm(1L, 1L);
+        filmService.likeFilm(1L, 2L);
+        filmService.likeFilm(1L, 3L);
+
         mockMvc.perform(delete("/films/1/like/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
@@ -335,7 +350,7 @@ class FilmControllerTest {
         mockMvc.perform(get("/films/popular?count=2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(3))
+                .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[1].name").value("testname2"));
     }
 

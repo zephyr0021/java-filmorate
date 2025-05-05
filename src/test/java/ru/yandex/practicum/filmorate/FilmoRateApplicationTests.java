@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -41,6 +42,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         MpaRowMapper.class,
         GenreRowMapper.class,
 })
+@Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class FilmoRateApplicationTests {
     private final FilmDbStorage filmDbStorage;
     private final UserDbStorage userDbStorage;
@@ -74,18 +77,18 @@ public class FilmoRateApplicationTests {
         testUser.setName("test");
         testUser.setBirthday(LocalDate.of(1900, 12, 25));
         userDbStorage.addUser(testUser);
-        Optional<User> userOptional = userDbStorage.getUser(5L);
+        Optional<User> userOptional = userDbStorage.getUser(4L);
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", 5L));
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 4L));
 
         Collection<User> allUsers = userDbStorage.getUsers();
         assertThat(allUsers)
                 .isNotEmpty()
                 .hasSize(4)
                 .map(User::getId)
-                .containsExactly(1L, 2L, 3L, 5L);
+                .containsExactly(1L, 2L, 3L, 4L);
     }
 
     @Test
@@ -288,24 +291,19 @@ public class FilmoRateApplicationTests {
 
     @Test
     public void testLikeFilm() {
-        User testUser = new User();
-        testUser.setEmail("test@test.com");
-        testUser.setLogin("test");
-        testUser.setName("test");
-        testUser.setBirthday(LocalDate.of(1900, 12, 25));
-        userDbStorage.addUser(testUser);
-        filmDbStorage.addLikeFilm(1L, 9L);
+        filmDbStorage.addLikeFilm(1L, 1L);
 
         Optional<Film> filmOptional = filmDbStorage.getFilm(1L);
 
         assertThat(filmOptional).isPresent().hasValueSatisfying(film -> {
-            assertThat(film.getUsersLikes()).hasSize(4);
+            assertThat(film.getUsersLikes()).hasSize(1);
         });
     }
 
     @Test
     public void testRemoveLikeFilm() {
-        filmDbStorage.deleteLikeFilm(1L, 3L);
+        filmDbStorage.addLikeFilm(1L, 1L);
+        filmDbStorage.addLikeFilm(1L, 2L);
         filmDbStorage.deleteLikeFilm(1L, 2L);
 
         Optional<Film> filmOptional = filmDbStorage.getFilm(1L);
